@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Маркетинговая терминология — словарь для обучения</title>
+<style>
+  :root {
+    --bg: #fafaf8;
+    --fg: #1c1c1c;
+    --muted: #666;
+    --accent: #0d4f8b;
+    --code-bg: #f1f0eb;
+    --border: #e1ddd4;
+    --cat-1: #1f6feb;
+    --cat-2: #8957e5;
+    --cat-3: #d29922;
+    --cat-4: #2da44e;
+    --cat-5: #cf222e;
+    --cat-6: #6e7781;
+    --cat-7: #c93c54;
+    --cat-8: #1a7f37;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 0;
+  }
+  aside {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 16px 32px 32px;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+  }
+  aside h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 12px 0;
+    font-weight: 600;
+  }
+  aside ol {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+  }
+  aside ol li {
+    margin: 4px 0;
+  }
+  aside a {
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  aside a:hover {
+    background: rgba(0,0,0,0.04);
+    border-left-color: var(--accent);
+  }
+  aside .term-list {
+    font-size: 12.5px;
+    color: var(--muted);
+    padding-left: 8px;
+    border-left: 1px solid var(--border);
+    margin: 4px 0 8px 12px;
+  }
+  aside .term-list a {
+    padding: 2px 6px;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+  aside .term-list a:hover {
+    color: var(--fg);
+  }
+  main {
+    padding: 48px 48px 96px 48px;
+    max-width: 820px;
+  }
+  h1 {
+    font-size: 32px;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+  }
+  h2.category {
+    font-size: 22px;
+    margin: 56px 0 4px 0;
+    padding-top: 16px;
+    border-top: 2px solid var(--border);
+    letter-spacing: -0.01em;
+  }
+  h2.category .num {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 12px;
+    vertical-align: 2px;
+  }
+  .category-1 .num { background: var(--cat-1); }
+  .category-2 .num { background: var(--cat-2); }
+  .category-3 .num { background: var(--cat-3); }
+  .category-4 .num { background: var(--cat-4); }
+  .category-5 .num { background: var(--cat-5); }
+  .category-6 .num { background: var(--cat-6); }
+  .category-7 .num { background: var(--cat-7); }
+  .category-8 .num { background: var(--cat-8); }
+  .category-blurb {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 24px 40px;
+    font-style: italic;
+  }
+  article.term {
+    margin: 24px 0;
+    padding: 0 0 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  article.term:last-child { border-bottom: none; }
+  article.term h3 {
+    margin: 0 0 8px 0;
+    font-size: 17px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    color: var(--accent);
+    font-weight: 600;
+    scroll-margin-top: 16px;
+  }
+  article.term h3 .ru {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 15px;
+    margin-left: 8px;
+  }
+  article.term p {
+    margin: 8px 0;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13.5px;
+  }
+  .example {
+    background: #fff;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+  }
+  .example::before {
+    content: "Пример: ";
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .why {
+    background: #fff7e6;
+    border-left: 3px solid var(--cat-3);
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+  }
+  .why::before {
+    content: "Зачем нам: ";
+    font-weight: 600;
+    color: #8a6914;
+  }
+  .warning {
+    background: #fff0f0;
+    border-left: 3px solid var(--cat-5);
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 14.5px;
+  }
+  .warning::before {
+    content: "Внимание: ";
+    font-weight: 600;
+    color: var(--cat-5);
+  }
+  ul.compact {
+    margin: 8px 0;
+    padding-left: 24px;
+  }
+  ul.compact li {
+    margin: 4px 0;
+  }
+  .footer {
+    margin-top: 80px;
+    padding: 24px 0;
+    border-top: 2px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .footer h2 {
+    color: var(--fg);
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 24px;
+    }
+    main { padding: 24px; }
+  }
+  @media print {
+    aside { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    main { max-width: 100%; padding: 0; }
+    article.term { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <h2>Содержание</h2>
+  <ol>
+    <li><a href="#cat-1">1. Метрики и базовые понятия</a></li>
+    <li><a href="#cat-2">2. Воронка и атрибуция</a></li>
+    <li><a href="#cat-3">3. Meta и реклама</a></li>
+    <li><a href="#cat-4">4. UTM и трекинг</a></li>
+    <li><a href="#cat-5">5. Производство и креатив</a></li>
+    <li><a href="#cat-6">6. Статистика и методология</a></li>
+    <li><a href="#cat-7">7. Когнитивные ловушки</a></li>
+    <li><a href="#cat-8">8. Инструменты</a></li>
+  </ol>
+
+  <h2>Все термины</h2>
+  <div class="term-list">
+    <a href="#impressions">Impressions</a>
+    <a href="#ctr">CTR</a>
+    <a href="#conversions">Conversions</a>
+    <a href="#n">N (sample size)</a>
+    <a href="#low-n">Low-N</a>
+    <a href="#p-value">p-value</a>
+    <a href="#funnel">Funnel</a>
+    <a href="#funnel-stage">Funnel-stage</a>
+    <a href="#top-mid-bottom">Top/Mid/Bottom-funnel</a>
+    <a href="#funnel-attribution">Funnel-stage attribution</a>
+    <a href="#cp-stage">CP-{stage}</a>
+    <a href="#cac">CAC</a>
+    <a href="#ltv">LTV</a>
+    <a href="#roas">ROAS</a>
+    <a href="#roi">ROI</a>
+    <a href="#close-rate">Close rate</a>
+    <a href="#time-to-customer">Time-to-customer</a>
+    <a href="#lead-quality">Lead quality score</a>
+    <a href="#stage-progression">Stage progression speed</a>
+    <a href="#attribution">Attribution</a>
+    <a href="#capi">Meta CAPI</a>
+    <a href="#auction">Meta auction</a>
+    <a href="#bidding">Bidding</a>
+    <a href="#better-quality-signal">Better-quality signal</a>
+    <a href="#top-funnel-proxy">Top-funnel proxy</a>
+    <a href="#utm">UTM parameters</a>
+    <a href="#utm-standard">UTM-стандарт</a>
+    <a href="#join-key">Join key</a>
+    <a href="#hubspot-side-join">HubSpot-side join</a>
+    <a href="#click-id">Click ID (fbclid)</a>
+    <a href="#hook">Hook</a>
+    <a href="#hook-rate">Hook rate</a>
+    <a href="#hook-variant">Hook variant</a>
+    <a href="#aspect-ratio">Aspect ratio</a>
+    <a href="#sibling">Sibling / Siblings</a>
+    <a href="#variant">Variant</a>
+    <a href="#sibling-analysis">Sibling analysis</a>
+    <a href="#tagging">Tagging</a>
+    <a href="#metadata">Metadata</a>
+    <a href="#pre-registered">Pre-registered hypothesis</a>
+    <a href="#hypothesis-vs-pattern">Hypothesis vs Pattern</a>
+    <a href="#ci">Confidence Interval (CI)</a>
+    <a href="#point-estimate">Point estimate</a>
+    <a href="#naive-averages">Naive averages</a>
+    <a href="#population-mean">Population mean</a>
+    <a href="#bayesian-shrinkage">Bayesian hierarchical shrinkage</a>
+    <a href="#min-n-gate">Minimum-N gate</a>
+    <a href="#multiple-comparisons">Multiple-comparisons correction</a>
+    <a href="#bh">Benjamini-Hochberg</a>
+    <a href="#false-positive">False positive</a>
+    <a href="#natural-experiment">Natural experiment</a>
+    <a href="#regression">Regression</a>
+    <a href="#correlation">Correlation</a>
+    <a href="#causal-inference">Causal inference</a>
+    <a href="#confounder">Confounder</a>
+    <a href="#propensity">Propensity score matching</a>
+    <a href="#holdout">Holdout</a>
+    <a href="#holdout-validation">Holdout validation</a>
+    <a href="#versioned-features">Versioned features</a>
+    <a href="#reproducibility">Reproducibility</a>
+    <a href="#power-analysis">Power analysis</a>
+    <a href="#confirmation-bias">Confirmation bias</a>
+    <a href="#p-hacking">P-hacking</a>
+    <a href="#cherry-picking">Cherry-picking</a>
+    <a href="#survivorship">Survivorship bias</a>
+    <a href="#overfitting">Overfitting</a>
+    <a href="#noise-vs-signal">Noise vs signal</a>
+    <a href="#silent-recomputations">Silent recomputations</a>
+    <a href="#numpyro">numpyro</a>
+    <a href="#pymc">PyMC</a>
+    <a href="#dowhy">DoWhy</a>
+    <a href="#econml">EconML</a>
+    <a href="#pgvector">pgvector</a>
+  </div>
+</aside>
+
+<main>
+
+<h1>Маркетинговая терминология</h1>
+<p class="subtitle">
+  Словарь для обучения — извлечено из методологического обсуждения по
+  построению marketing-intelligence модуля для ZPA. Термины — на английском
+  (как используются в индустрии и в коде). Определения и примеры —
+  на русском, привязаны к нашей системе.
+</p>
+
+<!-- =========================================================== -->
+
+<section class="category-1">
+<h2 class="category" id="cat-1"><span class="num">1</span>Метрики и базовые понятия рекламы</h2>
+<p class="category-blurb">Базовые величины, которыми оперирует любой рекламный кабинет.</p>
+
+<article class="term">
+  <h3 id="impressions">Impressions <span class="ru">— показы</span></h3>
+  <p>Сколько раз реклама была отображена пользователям. Это знаменатель для большинства метрик: <code>CTR = clicks / impressions</code>.</p>
+</article>
+
+<article class="term">
+  <h3 id="ctr">CTR <span class="ru">— Click-Through Rate, кликабельность</span></h3>
+  <p>Доля показов, которые привели к клику. <code>CTR = clicks / impressions × 100%</code>.</p>
+  <div class="example">CTR = 1.2% означает, что из 1000 показов 12 человек кликнули.</div>
+</article>
+
+<article class="term">
+  <h3 id="conversions">Conversions <span class="ru">— конверсии</span></h3>
+  <p>События, которые мы хотим, чтобы пользователь совершил после клика: подписаться на рассылку, забронировать звонок, стать клиентом. У каждой стадии воронки своя конверсия.</p>
+</article>
+
+<article class="term">
+  <h3 id="n">N <span class="ru">— sample size, размер выборки</span></h3>
+  <p>Сколько данных у нас есть для конкретного измерения. <code>N = 8 ads</code>, <code>N = 47K impressions</code>. Чем больше N — тем надёжнее вывод.</p>
+</article>
+
+<article class="term">
+  <h3 id="low-n">Low-N</h3>
+  <p>«Малый размер выборки». Ситуация, когда данных недостаточно для уверенных выводов. Среднее по 3 объявлениям — low-N; среднее по 50 — уже что-то.</p>
+</article>
+
+<article class="term">
+  <h3 id="p-value">p-value <span class="ru">— p-значение</span></h3>
+  <p>Статистическая мера: насколько вероятно увидеть наблюдаемую разницу, если на самом деле разницы нет. <code>p = 0.04</code> означает «4% шанс что это случайность». Стандартный порог: <code>p &lt; 0.05</code>.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-2">
+<h2 class="category" id="cat-2"><span class="num">2</span>Воронка и атрибуция</h2>
+<p class="category-blurb">Как лид проходит путь от рекламы до покупки и как мы это измеряем.</p>
+
+<article class="term">
+  <h3 id="funnel">Funnel <span class="ru">— воронка</span></h3>
+  <p>Последовательность стадий, которые проходит человек от первого контакта с рекламой до покупки. У ZPA:</p>
+  <p><code>Subscribe → Call 1 Book → Call 1 Show → Call 2 Book → Call 2 Show → Customer</code></p>
+</article>
+
+<article class="term">
+  <h3 id="funnel-stage">Funnel-stage <span class="ru">— стадия воронки</span></h3>
+  <p>Конкретная точка в воронке. Каждая стадия имеет свою метрику затрат (CP-...) и свою конверсию.</p>
+</article>
+
+<article class="term">
+  <h3 id="top-mid-bottom">Top-funnel / Mid-funnel / Bottom-funnel</h3>
+  <ul class="compact">
+    <li><strong>Top-funnel</strong> — верх: внимание (impressions, CTR, hook rate)</li>
+    <li><strong>Mid-funnel</strong> — середина: интерес (subscribe, call_1_book)</li>
+    <li><strong>Bottom-funnel</strong> — низ: действие (customers, revenue)</li>
+  </ul>
+  <div class="why">реклама с хорошим top-funnel может быть слабой по bottom-funnel — много кликов, но никто не покупает. Оптимизация только под top-funnel метрики ведёт к ошибочным решениям.</div>
+</article>
+
+<article class="term">
+  <h3 id="funnel-attribution">Funnel-stage-specific attribution</h3>
+  <p>Анализ эффективности рекламы по каждой стадии воронки отдельно, не только по итоговой. Ключевой принцип: <strong>«низкий CTR + высокий close rate» лучше, чем «высокий CTR + низкий close rate»</strong>.</p>
+</article>
+
+<article class="term">
+  <h3 id="cp-stage">CP-{stage} <span class="ru">— Cost-Per-{stage}</span></h3>
+  <p>Стоимость прохождения одной стадии воронки. <code>spend / count_at_stage</code>.</p>
+  <ul class="compact">
+    <li><strong>CP-Subscribe</strong> — стоимость подписчика</li>
+    <li><strong>CP-Call1Book</strong> — стоимость забронированного звонка</li>
+    <li><strong>CP-Call1Show</strong> — стоимость человека, реально пришедшего на звонок</li>
+    <li><strong>CP-Customer</strong> — стоимость клиента (синоним CAC)</li>
+  </ul>
+</article>
+
+<article class="term">
+  <h3 id="cac">CAC <span class="ru">— Customer Acquisition Cost</span></h3>
+  <p>Стоимость приобретения одного клиента. <code>CAC = total spend / customers</code>.</p>
+</article>
+
+<article class="term">
+  <h3 id="ltv">LTV <span class="ru">— Lifetime Value</span></h3>
+  <p>Сколько денег один клиент приносит за всё время жизни. Если <code>LTV &gt; CAC</code> — реклама прибыльна. <strong>Главная метрика для оценки ROI.</strong></p>
+</article>
+
+<article class="term">
+  <h3 id="roas">ROAS <span class="ru">— Return On Ad Spend</span></h3>
+  <p>Возврат на потраченное на рекламу. <code>ROAS = revenue from ads / ad spend</code>.</p>
+  <div class="example">ROAS = 2.0 значит «на каждый потраченный $1 пришло $2 выручки».</div>
+</article>
+
+<article class="term">
+  <h3 id="roi">ROI <span class="ru">— Return On Investment</span></h3>
+  <p>Общий возврат на инвестицию (включая всё, не только рекламу).</p>
+</article>
+
+<article class="term">
+  <h3 id="close-rate">Close rate</h3>
+  <p>Конверсия из последней стадии воронки в клиента. <code>Close rate = customers / call_2_show</code>. Ключевая метрика качества лидов.</p>
+</article>
+
+<article class="term">
+  <h3 id="time-to-customer">Time-to-customer</h3>
+  <p>Сколько дней проходит от первого контакта до покупки. Короткое время → горячие лиды; долгое → холодные. Сам по себе — сигнал качества.</p>
+</article>
+
+<article class="term">
+  <h3 id="lead-quality">Lead quality score</h3>
+  <p>Композитная метрика качества лида от конкретного объявления. Высокий score = лиды, которые быстро и часто становятся клиентами. <code>f(stage_progression_speed, customer_LTV, conversion_to_each_stage)</code>.</p>
+</article>
+
+<article class="term">
+  <h3 id="stage-progression">Stage progression speed</h3>
+  <p>Скорость, с которой лид проходит воронку. Лиды от хорошего объявления переходят со стадии на стадию быстрее.</p>
+</article>
+
+<article class="term">
+  <h3 id="attribution">Attribution <span class="ru">— атрибуция</span></h3>
+  <p>Связывание customer-события (покупка, лид) с конкретной рекламой, которая его привела. Без правильной атрибуции мы не знаем, какая реклама работает.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-3">
+<h2 class="category" id="cat-3"><span class="num">3</span>Meta и реклама</h2>
+<p class="category-blurb">Как работает рекламный аукцион Meta и что в нём можно улучшить.</p>
+
+<article class="term">
+  <h3 id="capi">Meta Conversion API (CAPI)</h3>
+  <p>Серверный API, через который мы отправляем события воронки (лид заполнил форму, забронировал звонок, стал клиентом) <strong>обратно в Meta</strong>.</p>
+  <div class="why">Meta-аукцион получает better-quality signal и оптимизирует bidding под реальных клиентов, не под top-funnel-прокси. Снижает CAC, повышает ROI.</div>
+</article>
+
+<article class="term">
+  <h3 id="auction">Meta auction <span class="ru">— аукцион Meta</span></h3>
+  <p>Механизм, по которому Meta решает, чьё объявление показать конкретному пользователю. Все рекламодатели «бидуют», Meta выбирает выигрышное объявление по комбинации цены и predicted engagement.</p>
+</article>
+
+<article class="term">
+  <h3 id="bidding">Bidding <span class="ru">— биддинг</span></h3>
+  <p>Процесс установки максимальной цены, которую вы готовы заплатить за конкретное действие (показ, клик, конверсию). Влияет на то, выиграет ли ваше объявление аукцион.</p>
+</article>
+
+<article class="term">
+  <h3 id="better-quality-signal">Better-quality signal</h3>
+  <p>Информация о том, что данный клик/лид действительно стал ценным customer'ом. Передаётся в Meta через CAPI. Без этого Meta оптимизирует под прокси (клики, подписки), а не под реальную ценность.</p>
+</article>
+
+<article class="term">
+  <h3 id="top-funnel-proxy">Top-funnel proxy</h3>
+  <p>Замещающая метрика верхней части воронки (например, CTR), которой пользуются, когда нет данных по нижней части.</p>
+  <div class="warning">top-funnel-прокси часто не коррелирует с реальной customer-конверсией, и оптимизация под него ведёт в неверную сторону.</div>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-4">
+<h2 class="category" id="cat-4"><span class="num">4</span>UTM и трекинг</h2>
+<p class="category-blurb">Как клик из рекламы превращается в идентифицируемого лида в CRM.</p>
+
+<article class="term">
+  <h3 id="utm">UTM parameters <span class="ru">— UTM-метки</span></h3>
+  <p>Стандартные параметры в URL, которые передают информацию об источнике трафика в аналитику. Пять полей:</p>
+  <ul class="compact">
+    <li><code>utm_source</code> — источник (например, <code>meta</code>)</li>
+    <li><code>utm_medium</code> — тип канала (например, <code>paid_social</code>)</li>
+    <li><code>utm_campaign</code> — название кампании</li>
+    <li><code>utm_content</code> — конкретное объявление / креатив (часто сюда кладут уникальный ID типа <code>mes000312</code>)</li>
+    <li><code>utm_term</code> — обычно для поисковой рекламы</li>
+  </ul>
+</article>
+
+<article class="term">
+  <h3 id="utm-standard">UTM-стандарт</h3>
+  <p>Зафиксированная конвенция: какие именно значения у нас идут в каждое из полей. Без жёсткого стандарта join Meta ↔ HubSpot всегда будет дырявый.</p>
+</article>
+
+<article class="term">
+  <h3 id="join-key">Join key <span class="ru">— ключ связи</span></h3>
+  <p>Поле, по которому сшиваются данные из разных систем.</p>
+  <ul class="compact">
+    <li><code>mes_id</code> сшивает Meta-данные с asset filename</li>
+    <li><code>utm_content</code> (если содержит <code>mes_id</code>) сшивает Meta-клик с HubSpot-лидом</li>
+  </ul>
+</article>
+
+<article class="term">
+  <h3 id="hubspot-side-join">HubSpot-side join</h3>
+  <p>Связь Meta-объявление → HubSpot-лид, реализованная <strong>на стороне HubSpot</strong> (через UTM, click_id или native integration).</p>
+</article>
+
+<article class="term">
+  <h3 id="click-id">Click ID (<code>fbclid</code>)</h3>
+  <p>Уникальный идентификатор клика, который Meta автоматически добавляет в URL при переходе из рекламы. Если сохранить его в HubSpot contact — получаем 1:1 связь клика и лида.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-5">
+<h2 class="category" id="cat-5"><span class="num">5</span>Производство и креатив</h2>
+<p class="category-blurb">Структурные элементы видео и их идентификация в нашей системе.</p>
+
+<article class="term">
+  <h3 id="hook">Hook <span class="ru">— хук</span></h3>
+  <p>Первые 1-3 секунды видео — задача удержать внимание зрителя и не дать ему скроллить дальше. Сильный хук = высокий hook rate.</p>
+</article>
+
+<article class="term">
+  <h3 id="hook-rate">Hook rate (3-second view rate)</h3>
+  <p>Доля показов, в которых пользователь посмотрел минимум 3 секунды. <code>hook_rate = 3sec_views / impressions</code>. Прямая метрика силы хука.</p>
+</article>
+
+<article class="term">
+  <h3 id="hook-variant">Hook variant</h3>
+  <p>Альтернативный хук для того же скрипта. У нас в naming convention обозначается токеном <code>H3</code>. Один скрипт может иметь несколько hook-вариантов для тестирования.</p>
+</article>
+
+<article class="term">
+  <h3 id="aspect-ratio">Aspect ratio <span class="ru">— соотношение сторон</span></h3>
+  <ul class="compact">
+    <li><code>16x9</code> — горизонталь (для YouTube, Feed)</li>
+    <li><code>4x5</code> — квадрат (для Instagram Feed)</li>
+    <li><code>9x16</code> — вертикаль (для Reels, Stories)</li>
+  </ul>
+</article>
+
+<article class="term">
+  <h3 id="sibling">Sibling / Siblings <span class="ru">— сиблинги, родственные объявления</span></h3>
+  <p>Объявления, построенные из <strong>одного и того же скрипта</strong> с вариациями (разный hook, aspect, длина, editor). Их сравнение — самый чистый сигнал в анализе, потому что content-переменная одинаковая.</p>
+</article>
+
+<article class="term">
+  <h3 id="variant">Variant <span class="ru">— вариант</span></h3>
+  <p>Конкретная версия объявления, отличающаяся одним или несколькими атрибутами от других в той же группе. У нас один скрипт ≈ 6 вариантов (2 hook × 3 aspect).</p>
+</article>
+
+<article class="term">
+  <h3 id="sibling-analysis">Sibling analysis <span class="ru">— сиблинг-анализ</span></h3>
+  <p>Метод сравнения вариантов одного скрипта между собой. Изолирует эффект конкретного атрибута (hook, aspect, editor) от content скрипта.</p>
+  <div class="why">самый сильный аналитический инструмент в нашем арсенале — даёт почти-каузальный вывод без сложной статистики.</div>
+</article>
+
+<article class="term">
+  <h3 id="tagging">Tagging <span class="ru">— тегирование</span></h3>
+  <p>Добавление структурированных метаданных к креативу: <code>hook_id=H3</code>, <code>length=LONG</code>, <code>editor=Kevin</code>. Сейчас извлекается из имени файла; в идеале — кладётся в metadata Frame.io явно.</p>
+</article>
+
+<article class="term">
+  <h3 id="metadata">Metadata <span class="ru">— метаданные</span></h3>
+  <p>Структурированная информация о видео-файле, не входящая в сам контент: hook_id, editor, production_date, aspect_ratio. Хранится в системе управления (Frame.io) или в имени файла.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-6">
+<h2 class="category" id="cat-6"><span class="num">6</span>Статистика и методология анализа</h2>
+<p class="category-blurb">Самая плотная глава. Здесь живёт разница между «настоящим анализом» и «confirmation bias в красивой обёртке».</p>
+
+<article class="term">
+  <h3 id="pre-registered">Pre-registered hypothesis <span class="ru">— пред-регистрированная гипотеза</span></h3>
+  <p>Гипотеза, записанная <strong>до</strong> просмотра данных. Содержит: что тестируется, какая метрика, какое ожидаемое направление, минимальный N для решения.</p>
+  <div class="example">«Гипотеза: H3-хуки выигрывают у no-H по CTR. Ожидаемый эффект: +15-30%. Минимальный N: 10K impressions на ветку».</div>
+  <div class="why">убирает confirmation bias — главную угрозу маркетинг-аналитики. Без этого аналитик найдёт «паттерн» в любом шуме.</div>
+</article>
+
+<article class="term">
+  <h3 id="hypothesis-vs-pattern">Hypothesis vs Pattern</h3>
+  <ul class="compact">
+    <li><strong>Hypothesis</strong> (гипотеза) — предположение о паттерне, ещё не подтверждённое</li>
+    <li><strong>Pattern</strong> (паттерн) — подтверждённое явление, прошедшее статистическую проверку и holdout-валидацию</li>
+  </ul>
+  <p>Без этого разделения «гипотезы» становятся «паттернами» по желанию аналитика.</p>
+</article>
+
+<article class="term">
+  <h3 id="ci">Confidence Interval (CI) <span class="ru">— доверительный интервал</span></h3>
+  <p>Диапазон, в котором с заданной вероятностью (обычно 95%) лежит истинное значение метрики.</p>
+  <div class="example">«CTR = 1.0% — 1.4% (95% CI)» означает «мы на 95% уверены, что истинный CTR где-то в этих границах».</div>
+  <p>Альтернатива — point estimate — всегда <strong>врёт сильнее</strong>, потому что не показывает неопределённость.</p>
+</article>
+
+<article class="term">
+  <h3 id="point-estimate">Point estimate <span class="ru">— точечная оценка</span></h3>
+  <p>Одно конкретное число без диапазона, например «CTR = 1.2%».</p>
+  <div class="warning">скрывает, насколько эта цифра надёжна. На малом N точечная оценка может ошибаться в 2-3 раза.</div>
+</article>
+
+<article class="term">
+  <h3 id="naive-averages">Naive averages <span class="ru">— наивные средние</span></h3>
+  <p>Просто арифметическое среднее по группе без учёта размера выборки. На малых N систематически переоценивает или недооценивает реальный эффект.</p>
+</article>
+
+<article class="term">
+  <h3 id="population-mean">Population mean <span class="ru">— популяционное среднее</span></h3>
+  <p>Среднее значение по всей популяции данных (всем 231 видео), а не по конкретной подгруппе. Используется как baseline для shrinkage.</p>
+</article>
+
+<article class="term">
+  <h3 id="bayesian-shrinkage">Bayesian hierarchical shrinkage <span class="ru">— байесовское иерархическое сжатие</span></h3>
+  <p>Статистический метод, который «подтягивает» шумные оценки малых групп к популяционному среднему. Чем меньше у группы данных — тем сильнее подтягивание. Эффект: low-N группы перестают давать дикие выбросы и становятся надёжнее.</p>
+  <div class="why">при средних 3.7 вариантах на скрипт, naive averages переобучаются. Bayesian shrinkage — обязателен.</div>
+</article>
+
+<article class="term">
+  <h3 id="min-n-gate">Minimum-N gate</h3>
+  <p>Жёсткий порог: если данных меньше — никаких выводов. Например: для CTR — минимум 10K impressions; для CP-Customer — минимум 5 customers. Запись с N ниже порога не валидируется системой.</p>
+</article>
+
+<article class="term">
+  <h3 id="multiple-comparisons">Multiple-comparisons correction <span class="ru">— поправка на множественные сравнения</span></h3>
+  <p>Если тестируем 50 атрибутов одновременно при <code>p &lt; 0.05</code>, без поправки получим 2-3 ложных результата. Поправка корректирует пороги, чтобы это компенсировать.</p>
+</article>
+
+<article class="term">
+  <h3 id="bh">Benjamini-Hochberg (BH) correction</h3>
+  <p>Конкретный метод поправки на множественные сравнения, контролирующий FDR (False Discovery Rate). Менее консервативен, чем Bonferroni, но достаточен для маркетинг-аналитики.</p>
+</article>
+
+<article class="term">
+  <h3 id="false-positive">False positive <span class="ru">— ложноположительный результат</span></h3>
+  <p>Результат, выглядящий значимым, но на самом деле случайный. Главная угроза при множественных тестах без поправки.</p>
+</article>
+
+<article class="term">
+  <h3 id="natural-experiment">Natural experiment <span class="ru">— естественный эксперимент</span></h3>
+  <p>Ситуация, когда условия эксперимента возникают сами без преднамеренной рандомизации. Сиблинги — natural experiment: editor создаёт варианты не для теста, но они получаются эквивалентны контрольной группе.</p>
+</article>
+
+<article class="term">
+  <h3 id="regression">Regression <span class="ru">— регрессия</span></h3>
+  <p>Статистический метод, оценивающий зависимость одной переменной от другой. Базовый инструмент.</p>
+  <div class="warning">даёт correlation, не causation.</div>
+</article>
+
+<article class="term">
+  <h3 id="correlation">Correlation <span class="ru">— корреляция</span></h3>
+  <p>Совместное изменение двух величин. <strong>Не означает</strong>, что одна — причина другой. Известная мантра: <em>correlation ≠ causation</em>.</p>
+</article>
+
+<article class="term">
+  <h3 id="causal-inference">Causal inference <span class="ru">— причинный вывод</span></h3>
+  <p>Совокупность методов, формально оценивающих причинно-следственную связь. Не «X коррелирует с Y», а «X действительно вызывает Y».</p>
+</article>
+
+<article class="term">
+  <h3 id="confounder">Confounder <span class="ru">— конфаундер, мешающий фактор</span></h3>
+  <p>Переменная Z, которая влияет одновременно на «причину» X и на «следствие» Y, создавая ложную корреляцию между ними.</p>
+  <div class="example">placement Reels (Z) влияет и на наш hook variant (X), и на CTR (Y). Без контроля Z мы припишем эффект Reels хуку.</div>
+</article>
+
+<article class="term">
+  <h3 id="propensity">Propensity score matching</h3>
+  <p>Метод causal inference. Для каждого «обработанного» объявления находим максимально похожее «не-обработанное» по covariates (audience, time, spend), и сравниваем их пары. Контролирует confounder'ы без рандомизации.</p>
+</article>
+
+<article class="term">
+  <h3 id="holdout">Holdout <span class="ru">— отложенная выборка</span></h3>
+  <p>20% случайно отобранных данных, которые <strong>скрываются от аналитика на этапе разведки</strong>. Если найденный паттерн воспроизводится на holdout — он реален. Если нет — overfitting.</p>
+  <div class="why">самый дешёвый и эффективный способ поймать ложные паттерны.</div>
+</article>
+
+<article class="term">
+  <h3 id="holdout-validation">Holdout validation</h3>
+  <p>Процесс проверки найденного паттерна на отложенных данных. Если на 80% паттерн виден, а на 20% holdout — нет, паттерн помечается <code>failed_validation</code> и в действия не идёт.</p>
+</article>
+
+<article class="term">
+  <h3 id="versioned-features">Versioned features <span class="ru">— версионированные признаки</span></h3>
+  <p>Если меняем формулу подсчёта признака — старые данные сохраняются под <code>v1</code>, новые под <code>v2</code>. Никаких silent recomputations. Гарантирует воспроизводимость на годы.</p>
+</article>
+
+<article class="term">
+  <h3 id="reproducibility">Reproducibility <span class="ru">— воспроизводимость</span></h3>
+  <p>Свойство анализа: тот же запрос на тех же данных даёт тот же результат, кем бы ни запускался. Без этого «паттерны» становятся мнениями.</p>
+</article>
+
+<article class="term">
+  <h3 id="power-analysis">Power analysis <span class="ru">— анализ мощности</span></h3>
+  <p>Статистический расчёт: сколько данных нужно собрать, чтобы детектировать эффект заданного размера с заданной вероятностью. Помогает откалибровать min-N gates под реальную вариативность данных.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-7">
+<h2 class="category" id="cat-7"><span class="num">7</span>Когнитивные ловушки</h2>
+<p class="category-blurb">Систематические ошибки мышления, против которых разработана методология раздела 6.</p>
+
+<article class="term">
+  <h3 id="confirmation-bias">Confirmation bias <span class="ru">— предвзятость подтверждения</span></h3>
+  <p>Тенденция искать и интерпретировать данные так, чтобы они подтвердили то, во что мы уже верим. Главная угроза маркетинг-аналитики.</p>
+  <div class="why">pre-registration — главное противоядие.</div>
+</article>
+
+<article class="term">
+  <h3 id="p-hacking">P-hacking</h3>
+  <p>Подбор статистических тестов или подвыборок, пока не найдётся «значимый» результат. Анти-паттерн, формально запрещённый.</p>
+</article>
+
+<article class="term">
+  <h3 id="cherry-picking">Cherry-picking</h3>
+  <p>Выбор только тех данных или периодов, которые подтверждают гипотезу, и игнорирование остальных.</p>
+</article>
+
+<article class="term">
+  <h3 id="survivorship">Survivorship bias <span class="ru">— предвзятость выживших</span></h3>
+  <p>Анализ только тех объявлений, которые «выжили» (продолжают работать), без учёта тех, что были killed early. Систематически переоценивает эффективность.</p>
+</article>
+
+<article class="term">
+  <h3 id="overfitting">Overfitting <span class="ru">— переобучение</span></h3>
+  <p>Модель / паттерн настолько подогнан под имеющиеся данные, что не обобщается на новые.</p>
+  <div class="why">holdout validation — главный инструмент против.</div>
+</article>
+
+<article class="term">
+  <h3 id="noise-vs-signal">Noise vs signal</h3>
+  <ul class="compact">
+    <li><strong>Noise</strong> (шум) — случайные колебания в данных, не несущие информации</li>
+    <li><strong>Signal</strong> (сигнал) — реальные паттерны</li>
+  </ul>
+  <p>Без дисциплины (CI, min-N, holdout) шум легко принимается за сигнал.</p>
+</article>
+
+<article class="term">
+  <h3 id="silent-recomputations">Silent recomputations</h3>
+  <p>Тихие пересчёты признаков с новой формулой без версионирования. Опасно: данные «до» и «после» становятся несравнимыми, но выглядят одинаково.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<section class="category-8">
+<h2 class="category" id="cat-8"><span class="num">8</span>Инструменты (библиотеки)</h2>
+<p class="category-blurb">Конкретные технические библиотеки, реализующие методы из раздела 6.</p>
+
+<article class="term">
+  <h3 id="numpyro">numpyro</h3>
+  <p>Python-библиотека для байесовских вероятностных моделей. Используется для hierarchical shrinkage.</p>
+</article>
+
+<article class="term">
+  <h3 id="pymc">PyMC</h3>
+  <p>Альтернатива numpyro, более старая и зрелая. Те же задачи.</p>
+</article>
+
+<article class="term">
+  <h3 id="dowhy">DoWhy</h3>
+  <p>Python-библиотека для causal inference от Microsoft. Реализует propensity matching и связанные методы.</p>
+</article>
+
+<article class="term">
+  <h3 id="econml">EconML</h3>
+  <p>Python-библиотека от Microsoft Research для оценки причинных эффектов в эконометрической постановке.</p>
+</article>
+
+<article class="term">
+  <h3 id="pgvector">pgvector</h3>
+  <p>Расширение PostgreSQL, добавляющее тип данных «вектор» и операторы похожести (cosine, L2). Основа для embedding-анализа в Supabase.</p>
+</article>
+</section>
+
+<!-- =========================================================== -->
+
+<div class="footer">
+  <h2>Как пользоваться этим словарём</h2>
+  <ul class="compact">
+    <li><strong>Если встречаешь незнакомый термин в чате</strong> — открой этот файл по <code>Cmd+F</code>, найди определение.</li>
+    <li><strong>Если хочешь системно разобраться</strong> — читай по разделам, в порядке 1 → 8. Раздел 6 (статистика) — самый плотный, его лучше прочитать дважды.</li>
+    <li><strong>Если работаешь с агентом-аналитиком</strong> — раздел 6 + раздел 7 (когнитивные ловушки) — обязательная база, чтобы понимать, почему агент отказывается выполнять некоторые запросы.</li>
+  </ul>
+  <p style="margin-top: 16px;">Этот словарь живой. Если в новых обсуждениях появляются термины, не включённые сюда — добавь их через Claude Code или вручную.</p>
+</div>
+
+</main>
+</div>
+</body>
+</html>

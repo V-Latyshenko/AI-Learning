@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Линейная алгебра для LLM · Визуальный курс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Serif+4:opsz,wght@8..60,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF6EE;
+    --bg-alt: #F2ECDD;
+    --ink: #1F2329;
+    --ink-soft: #4A4F58;
+    --line: #D4CDB8;
+    --line-soft: #E5DFCE;
+    --accent: #2A6F6B;
+    --accent-soft: #BFD8D5;
+    --highlight: #F4D35E;
+    --rust: #BC4B51;
+    --paper: #FFFCF3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.65;
+    font-feature-settings: "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ------------ TYPOGRAPHY ------------ */
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.05; font-weight: 400; }
+  h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.15; margin-bottom: 0.5em; }
+  h3 { font-size: 1.4rem; line-height: 1.3; margin-top: 2em; margin-bottom: 0.5em; }
+  h4 { font-size: 1.15rem; line-height: 1.3; margin-top: 1.5em; margin-bottom: 0.3em; }
+
+  p { margin-bottom: 1em; }
+  p + p { margin-top: 0; }
+
+  em { font-style: italic; color: var(--ink-soft); }
+  strong { font-weight: 600; color: var(--ink); }
+
+  code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92em;
+    background: var(--bg-alt);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  /* ------------ LAYOUT ------------ */
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .container-wide {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ------------ HERO ------------ */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    margin-bottom: 24px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 300;
+  }
+  .hero-lede {
+    font-size: 1.25rem;
+    color: var(--ink-soft);
+    max-width: 580px;
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding-top: 24px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .hero-meta span strong { color: var(--ink); display: block; font-family: 'Source Serif 4', serif; font-size: 1rem; margin-top: 4px; font-weight: 600; }
+
+  .hero-svg {
+    margin: 50px 0 0;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ------------ TOC ------------ */
+  .toc {
+    padding: 60px 0;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: chapter;
+  }
+  .toc li {
+    counter-increment: chapter;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .toc li:last-child { border-bottom: none; }
+  .toc li::before {
+    content: counter(chapter, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    width: 32px;
+  }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc-desc {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    margin-left: auto;
+    text-align: right;
+    max-width: 320px;
+  }
+
+  /* ------------ MODULES ------------ */
+  .module {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+  .module-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .module h2 {
+    margin-bottom: 32px;
+  }
+
+  /* ------------ CALLOUTS ------------ */
+  .callout {
+    background: var(--paper);
+    border-left: 3px solid var(--accent);
+    padding: 24px 28px;
+    margin: 32px 0;
+    border-radius: 2px;
+  }
+  .callout.warm {
+    border-left-color: var(--rust);
+  }
+  .callout.highlight {
+    border-left-color: var(--highlight);
+    background: #FFF9E0;
+  }
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .callout.warm .callout-label { color: var(--rust); }
+  .callout.highlight .callout-label { color: #8B6914; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ------------ BIG QUOTE ------------ */
+  .big-quote {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    font-style: italic;
+    color: var(--ink);
+    text-align: center;
+    padding: 32px 24px;
+    margin: 32px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 700px) {
+    .big-quote { font-size: 1.2rem; padding: 24px 12px; }
+  }
+
+  /* ------------ FIGURE ------------ */
+  figure {
+    margin: 40px 0;
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 32px 24px 20px;
+  }
+  figure svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  figcaption {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    font-style: italic;
+    text-align: center;
+  }
+  figcaption strong { font-style: normal; color: var(--ink); }
+
+  /* ------------ FORMULA ------------ */
+  .formula {
+    text-align: center;
+    padding: 24px;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    margin: 24px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    color: var(--accent);
+    overflow-x: auto;
+  }
+
+  /* ------------ ANALOGY ------------ */
+  .analogy {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    background: #FFF9E0;
+    padding: 20px 24px;
+    border-radius: 4px;
+    margin: 24px 0;
+    align-items: start;
+  }
+  .analogy-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .analogy-text { color: var(--ink); }
+  .analogy-text strong { color: #6B4F0E; }
+
+  /* ------------ TWO-COL ------------ */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+  .two-col figure { margin: 0; }
+
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    .hero-meta { gap: 16px; }
+    .toc li { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .toc-desc { margin-left: 0; text-align: left; }
+  }
+
+  /* ------------ INLINE NOTE ------------ */
+  .note {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  /* ------------ FOOTER ------------ */
+  footer {
+    padding: 60px 0 80px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  footer .signoff {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  /* ------------ DECORATIVE LINE ------------ */
+  .deco-line {
+    text-align: center;
+    margin: 48px 0;
+    color: var(--line);
+    letter-spacing: 0.5em;
+    font-size: 0.8rem;
+  }
+
+  /* SVG palette helpers — used inline */
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">визуальный курс · 9 модулей</div>
+    <h1>Линейная алгебра <em>для LLM</em><br>с нуля и без боли</h1>
+    <p class="hero-lede">
+      Что на самом деле происходит внутри ChatGPT, Claude и других языковых моделей? Это всё —
+      векторы, матрицы и их умножение. Разберёмся <em>визуально</em>, без сложных формул.
+    </p>
+    <div class="hero-meta">
+      <span>Уровень<strong>С нуля</strong></span>
+      <span>Время<strong>~60 минут</strong></span>
+      <span>Подход<strong>Картинки → интуиция → формула</strong></span>
+      <span>Цель<strong>Понять, как «думает» LLM</strong></span>
+    </div>
+
+    <!-- Hero illustration: words as points in space -->
+    <svg class="hero-svg" viewBox="0 0 800 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Слова как точки в пространстве">
+      <defs>
+        <radialGradient id="dotG" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#2A6F6B" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#2A6F6B" stop-opacity="0.4"/>
+        </radialGradient>
+      </defs>
+      <!-- subtle grid -->
+      <g stroke="#D4CDB8" stroke-width="0.5" opacity="0.5">
+        <line x1="0" y1="60" x2="800" y2="60"/>
+        <line x1="0" y1="120" x2="800" y2="120"/>
+        <line x1="0" y1="180" x2="800" y2="180"/>
+        <line x1="160" y1="0" x2="160" y2="240"/>
+        <line x1="320" y1="0" x2="320" y2="240"/>
+        <line x1="480" y1="0" x2="480" y2="240"/>
+        <line x1="640" y1="0" x2="640" y2="240"/>
+      </g>
+
+      <!-- semantic clusters -->
+      <!-- animals -->
+      <g>
+        <circle cx="120" cy="80" r="6" fill="url(#dotG)"/>
+        <circle cx="155" cy="65" r="6" fill="url(#dotG)"/>
+        <circle cx="180" cy="95" r="6" fill="url(#dotG)"/>
+        <circle cx="140" cy="105" r="6" fill="url(#dotG)"/>
+        <text x="100" y="55" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">кошка</text>
+        <text x="170" y="50" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">собака</text>
+        <text x="195" y="115" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">тигр</text>
+        <text x="105" y="125" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">волк</text>
+      </g>
+      <!-- colors -->
+      <g>
+        <circle cx="380" cy="170" r="6" fill="#BC4B51" opacity="0.85"/>
+        <circle cx="410" cy="155" r="6" fill="#BC4B51" opacity="0.85"/>
+        <circle cx="440" cy="180" r="6" fill="#BC4B51" opacity="0.85"/>
+        <circle cx="395" cy="195" r="6" fill="#BC4B51" opacity="0.85"/>
+        <text x="350" y="148" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">красный</text>
+        <text x="425" y="140" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">синий</text>
+        <text x="455" y="200" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">жёлтый</text>
+        <text x="365" y="215" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">зелёный</text>
+      </g>
+      <!-- food -->
+      <g>
+        <circle cx="640" cy="100" r="6" fill="#F4D35E" stroke="#BC4B51" stroke-width="1"/>
+        <circle cx="680" cy="80" r="6" fill="#F4D35E" stroke="#BC4B51" stroke-width="1"/>
+        <circle cx="710" cy="115" r="6" fill="#F4D35E" stroke="#BC4B51" stroke-width="1"/>
+        <circle cx="660" cy="130" r="6" fill="#F4D35E" stroke="#BC4B51" stroke-width="1"/>
+        <text x="615" y="80" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">яблоко</text>
+        <text x="690" y="65" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">хлеб</text>
+        <text x="720" y="135" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">сыр</text>
+        <text x="640" y="150" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">мёд</text>
+      </g>
+
+      <!-- connecting lines (semantic neighbors) -->
+      <g stroke="#2A6F6B" stroke-width="0.5" opacity="0.3" fill="none">
+        <line x1="120" y1="80" x2="155" y2="65"/>
+        <line x1="155" y1="65" x2="180" y2="95"/>
+        <line x1="180" y1="95" x2="140" y2="105"/>
+        <line x1="140" y1="105" x2="120" y2="80"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============================== TOC ============================== -->
+<section class="toc">
+  <div class="container">
+    <div class="toc-title">Маршрут курса</div>
+    <ol>
+      <li><a href="#m1">Зачем LLM нужна линейная алгебра</a><span class="toc-desc">Большая картина: язык как геометрия</span></li>
+      <li><a href="#m2">Векторы — кирпичики смысла</a><span class="toc-desc">Что такое embedding и как слово становится числами</span></li>
+      <li><a href="#m3">Операции с векторами</a><span class="toc-desc">Сложение, вычитание, и магия «король − мужчина + женщина»</span></li>
+      <li><a href="#m4">Скалярное произведение и схожесть</a><span class="toc-desc">Как модель измеряет, насколько слова похожи</span></li>
+      <li><a href="#m5">Матрицы — память модели</a><span class="toc-desc">Где хранятся миллиарды параметров</span></li>
+      <li><a href="#m6">Умножение матриц</a><span class="toc-desc">Сердце forward pass и нейросети</span></li>
+      <li><a href="#m7">Линейные преобразования</a><span class="toc-desc">Что на самом деле делает каждый слой</span></li>
+      <li><a href="#m8">Attention — финальная сборка</a><span class="toc-desc">Q, K, V и как Transformer всё это использует</span></li>
+      <li><a href="#m9">Куда идти дальше</a><span class="toc-desc">Темы для углубления</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================== MODULE 1 ============================== -->
+<section class="module" id="m1">
+  <div class="container">
+    <div class="module-number">Модуль 01 · Большая картина</div>
+    <h2>Зачем LLM нужна линейная алгебра?</h2>
+
+    <p>
+      Когда ты пишешь сообщение в ChatGPT или Claude, модель видит не буквы и не слова. Она видит <strong>числа</strong>. Точнее — длинные списки чисел, которые называют <em>векторами</em>. Всё, что происходит дальше — это операции над этими векторами и таблицами чисел (матрицами).
+    </p>
+
+    <p>
+      Линейная алгебра — это просто <strong>правила игры с числами, выстроенными в строки и столбцы</strong>. И именно эти правила лежат в основе того, как нейросеть понимает язык.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Идея модуля</span>
+      <p>
+        LLM превращает каждое слово в точку в огромном пространстве. Близкие по смыслу слова стоят рядом. Дальше модель просто <em>двигает</em>, <em>складывает</em> и <em>сравнивает</em> эти точки — и так получается ответ.
+      </p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pipeline: текст → токены → векторы → матрицы → ответ">
+        <!-- Stage 1: Text -->
+        <g>
+          <rect x="20" y="120" width="100" height="80" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+          <text x="70" y="155" font-family="Fraunces, serif" font-size="13" text-anchor="middle" fill="#1F2329">«Привет,</text>
+          <text x="70" y="175" font-family="Fraunces, serif" font-size="13" text-anchor="middle" fill="#1F2329">мир!»</text>
+          <text x="70" y="225" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#4A4F58">текст</text>
+        </g>
+        <!-- Arrow -->
+        <g stroke="#2A6F6B" stroke-width="1.5" fill="none">
+          <line x1="125" y1="160" x2="155" y2="160" marker-end="url(#arr1)"/>
+        </g>
+        <defs>
+          <marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+        </defs>
+
+        <!-- Stage 2: Tokens -->
+        <g>
+          <rect x="160" y="120" width="100" height="80" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+          <text x="210" y="148" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle" fill="#2A6F6B">[Прив]</text>
+          <text x="210" y="165" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle" fill="#2A6F6B">[ет,]</text>
+          <text x="210" y="182" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle" fill="#2A6F6B">[мир!]</text>
+          <text x="210" y="225" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#4A4F58">токены</text>
+        </g>
+        <line x1="265" y1="160" x2="295" y2="160" stroke="#2A6F6B" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+        <!-- Stage 3: Vectors -->
+        <g>
+          <rect x="300" y="100" width="100" height="120" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+          <g font-family="JetBrains Mono, monospace" font-size="9" fill="#2A6F6B">
+            <text x="350" y="120" text-anchor="middle">[0.21, -0.4,</text>
+            <text x="350" y="133" text-anchor="middle">0.88, 0.07...]</text>
+            <text x="350" y="155" text-anchor="middle">[-0.1, 0.6,</text>
+            <text x="350" y="168" text-anchor="middle">0.02, 0.34...]</text>
+            <text x="350" y="190" text-anchor="middle">[0.5, 0.1,</text>
+            <text x="350" y="203" text-anchor="middle">-0.7, 0.9...]</text>
+          </g>
+          <text x="350" y="240" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#4A4F58">векторы (embeddings)</text>
+        </g>
+        <line x1="405" y1="160" x2="435" y2="160" stroke="#2A6F6B" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+        <!-- Stage 4: Matrix operations -->
+        <g>
+          <rect x="440" y="100" width="100" height="120" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+          <g transform="translate(460, 120)">
+            <!-- Mini matrix -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#1F2329">
+              <rect x="0" y="0" width="60" height="80" fill="none" stroke="#D4CDB8"/>
+              <line x1="0" y1="20" x2="60" y2="20" stroke="#D4CDB8"/>
+              <line x1="0" y1="40" x2="60" y2="40" stroke="#D4CDB8"/>
+              <line x1="0" y1="60" x2="60" y2="60" stroke="#D4CDB8"/>
+              <line x1="20" y1="0" x2="20" y2="80" stroke="#D4CDB8"/>
+              <line x1="40" y1="0" x2="40" y2="80" stroke="#D4CDB8"/>
+              <text x="10" y="14" text-anchor="middle">.4</text><text x="30" y="14" text-anchor="middle">.1</text><text x="50" y="14" text-anchor="middle">.8</text>
+              <text x="10" y="34" text-anchor="middle">.2</text><text x="30" y="34" text-anchor="middle">.9</text><text x="50" y="34" text-anchor="middle">.3</text>
+              <text x="10" y="54" text-anchor="middle">.7</text><text x="30" y="54" text-anchor="middle">.5</text><text x="50" y="54" text-anchor="middle">.1</text>
+              <text x="10" y="74" text-anchor="middle">.0</text><text x="30" y="74" text-anchor="middle">.6</text><text x="50" y="74" text-anchor="middle">.4</text>
+            </g>
+          </g>
+          <text x="490" y="240" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#4A4F58">матрицы весов × N слоёв</text>
+        </g>
+        <line x1="545" y1="160" x2="575" y2="160" stroke="#2A6F6B" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+        <!-- Stage 5: Output -->
+        <g>
+          <rect x="580" y="120" width="100" height="80" rx="4" fill="#F4D35E" stroke="#1F2329" stroke-width="1.5" opacity="0.4"/>
+          <rect x="580" y="120" width="100" height="80" rx="4" fill="none" stroke="#1F2329" stroke-width="1.5"/>
+          <text x="630" y="155" font-family="Fraunces, serif" font-size="13" text-anchor="middle" fill="#1F2329">«Здравствуй,</text>
+          <text x="630" y="175" font-family="Fraunces, serif" font-size="13" text-anchor="middle" fill="#1F2329">друг!»</text>
+          <text x="630" y="225" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#4A4F58">ответ</text>
+        </g>
+
+        <!-- Caption arrow -->
+        <text x="350" y="50" font-family="Fraunces, serif" font-size="14" text-anchor="middle" font-style="italic" fill="#1F2329">Весь путь от текста к ответу — это операции линейной алгебры</text>
+        <text x="350" y="290" font-family="JetBrains Mono, monospace" font-size="10" text-anchor="middle" fill="#BC4B51">↑ всё это — линейная алгебра ↑</text>
+      </svg>
+      <figcaption><strong>Pipeline LLM в одной картинке.</strong> Текст превращается в векторы, проходит через десятки матричных умножений, и в конце снова становится текстом.</figcaption>
+    </figure>
+
+    <h3>Что мы пройдём</h3>
+    <p>
+      Чтобы понять эту схему до конца, нам нужно научиться трём вещам:
+    </p>
+    <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
+      <li style="padding: 8px 0; border-bottom: 1px dotted var(--line);"><strong>Векторам</strong> — что это и почему смысл слова можно записать числами.</li>
+      <li style="padding: 8px 0; border-bottom: 1px dotted var(--line);"><strong>Матрицам</strong> — что это и почему «знания» нейросети — это просто большие таблицы чисел.</li>
+      <li style="padding: 8px 0;"><strong>Операциям</strong> над ними — особенно <em>умножению матрицы на вектор</em>, на котором держится 95% всех вычислений в LLM.</li>
+    </ul>
+
+    <p class="note">Дальше мы будем строить интуицию слой за слоем. Без зубрёжки — только понимание.</p>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 2 ============================== -->
+<section class="module" id="m2">
+  <div class="container">
+    <div class="module-number">Модуль 02 · Векторы</div>
+    <h2>Векторы — кирпичики смысла</h2>
+
+    <p>
+      <strong>Вектор</strong> — это просто список чисел. Например: <code>[3, 2]</code>. Эти числа можно нарисовать как точку или как стрелку из начала координат.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Вектор как стрелка на координатной плоскости">
+        <!-- grid -->
+        <g stroke="#E5DFCE" stroke-width="1">
+          <line x1="60" y1="40" x2="60" y2="280"/>
+          <line x1="120" y1="40" x2="120" y2="280"/>
+          <line x1="180" y1="40" x2="180" y2="280"/>
+          <line x1="240" y1="40" x2="240" y2="280"/>
+          <line x1="300" y1="40" x2="300" y2="280"/>
+          <line x1="360" y1="40" x2="360" y2="280"/>
+          <line x1="420" y1="40" x2="420" y2="280"/>
+          <line x1="480" y1="40" x2="480" y2="280"/>
+          <line x1="0" y1="40" x2="540" y2="40"/>
+          <line x1="0" y1="100" x2="540" y2="100"/>
+          <line x1="0" y1="160" x2="540" y2="160"/>
+          <line x1="0" y1="220" x2="540" y2="220"/>
+          <line x1="0" y1="280" x2="540" y2="280"/>
+        </g>
+        <!-- axes -->
+        <line x1="60" y1="280" x2="540" y2="280" stroke="#1F2329" stroke-width="1.5" marker-end="url(#arrAx)"/>
+        <line x1="60" y1="280" x2="60" y2="20" stroke="#1F2329" stroke-width="1.5" marker-end="url(#arrAx)"/>
+        <defs>
+          <marker id="arrAx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1F2329"/>
+          </marker>
+          <marker id="arrTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+        </defs>
+        <!-- axis labels -->
+        <text x="545" y="285" font-family="JetBrains Mono, monospace" font-size="12" fill="#1F2329">x</text>
+        <text x="50" y="20" font-family="JetBrains Mono, monospace" font-size="12" fill="#1F2329">y</text>
+        <!-- tick numbers -->
+        <g font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">
+          <text x="115" y="298" text-anchor="middle">1</text>
+          <text x="175" y="298" text-anchor="middle">2</text>
+          <text x="235" y="298" text-anchor="middle">3</text>
+          <text x="295" y="298" text-anchor="middle">4</text>
+          <text x="48" y="225" text-anchor="end">1</text>
+          <text x="48" y="165" text-anchor="end">2</text>
+          <text x="48" y="105" text-anchor="end">3</text>
+        </g>
+
+        <!-- vector v=[3,2] -->
+        <line x1="60" y1="280" x2="240" y2="160" stroke="#2A6F6B" stroke-width="3" marker-end="url(#arrTeal)"/>
+        <circle cx="240" cy="160" r="5" fill="#2A6F6B"/>
+        <!-- guide lines -->
+        <line x1="240" y1="160" x2="240" y2="280" stroke="#2A6F6B" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <line x1="240" y1="160" x2="60" y2="160" stroke="#2A6F6B" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <!-- label -->
+        <text x="155" y="215" font-family="Fraunces, serif" font-size="20" font-style="italic" fill="#2A6F6B">v</text>
+        <text x="170" y="215" font-family="JetBrains Mono, monospace" font-size="14" fill="#2A6F6B">= [3, 2]</text>
+
+        <!-- annotations -->
+        <text x="240" y="298" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#BC4B51">3 (по x)</text>
+        <text x="55" y="160" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="11" fill="#BC4B51">2 (по y)</text>
+      </svg>
+      <figcaption><strong>Вектор [3, 2]</strong> — это «иди 3 шага вправо и 2 шага вверх». Стрелка показывает направление и длину.</figcaption>
+    </figure>
+
+    <p>
+      В обычной жизни мы умеем работать с 2D векторами (стрелки на бумаге) и 3D (стрелки в пространстве). А вот в LLM векторы имеют <strong>сотни или тысячи измерений</strong>. Их нельзя нарисовать, но математика с ними работает точно так же.
+    </p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🎚️</div>
+      <div class="analogy-text">
+        <strong>Аналогия:</strong> представь пульт с 768 ползунками. Каждое слово — это уникальная конфигурация этих ползунков. Слово «кошка» — одна комбинация, слово «собака» — похожая, а «парламент» — совсем другая.
+      </div>
+    </div>
+
+    <h3>Embedding — слово как вектор</h3>
+
+    <p>
+      В LLM каждое слово (точнее, каждый <em>токен</em>) превращается в вектор фиксированной длины. Это называется <strong>embedding</strong> (эмбеддинг, «вложение»). У GPT-3 это вектор из 12 288 чисел. У моделей поменьше — 768, 1024 или 4096.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Слово 'кошка' как вектор из 8 чисел в виде столбиков">
+        <text x="20" y="40" font-family="Fraunces, serif" font-size="24" font-style="italic" fill="#1F2329">«кошка»</text>
+        <text x="20" y="62" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">→ embedding</text>
+
+        <!-- arrow -->
+        <line x1="140" y1="50" x2="180" y2="50" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrTeal2)"/>
+        <defs>
+          <marker id="arrTeal2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+        </defs>
+
+        <!-- vector visualization as bars -->
+        <g transform="translate(200, 30)">
+          <!-- 8 columns -->
+          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">
+            <!-- baseline -->
+            <line x1="0" y1="80" x2="480" y2="80" stroke="#1F2329" stroke-width="1"/>
+
+            <!-- bars: positive go up, negative go down -->
+            <!-- 0.21 -->
+            <rect x="10" y="59" width="40" height="21" fill="#2A6F6B" opacity="0.85"/>
+            <text x="30" y="100" text-anchor="middle">0.21</text>
+            <text x="30" y="115" text-anchor="middle">[1]</text>
+
+            <!-- -0.4 -->
+            <rect x="70" y="80" width="40" height="40" fill="#BC4B51" opacity="0.85"/>
+            <text x="90" y="135" text-anchor="middle">-0.40</text>
+            <text x="90" y="150" text-anchor="middle">[2]</text>
+
+            <!-- 0.88 -->
+            <rect x="130" y="2" width="40" height="78" fill="#2A6F6B" opacity="0.85"/>
+            <text x="150" y="100" text-anchor="middle">0.88</text>
+            <text x="150" y="115" text-anchor="middle">[3]</text>
+
+            <!-- 0.07 -->
+            <rect x="190" y="73" width="40" height="7" fill="#2A6F6B" opacity="0.85"/>
+            <text x="210" y="100" text-anchor="middle">0.07</text>
+            <text x="210" y="115" text-anchor="middle">[4]</text>
+
+            <!-- -0.15 -->
+            <rect x="250" y="80" width="40" height="15" fill="#BC4B51" opacity="0.85"/>
+            <text x="270" y="115" text-anchor="middle">-0.15</text>
+            <text x="270" y="130" text-anchor="middle">[5]</text>
+
+            <!-- 0.62 -->
+            <rect x="310" y="25" width="40" height="55" fill="#2A6F6B" opacity="0.85"/>
+            <text x="330" y="100" text-anchor="middle">0.62</text>
+            <text x="330" y="115" text-anchor="middle">[6]</text>
+
+            <!-- -0.78 -->
+            <rect x="370" y="80" width="40" height="68" fill="#BC4B51" opacity="0.85"/>
+            <text x="390" y="163" text-anchor="middle">-0.78</text>
+            <text x="390" y="178" text-anchor="middle">[7]</text>
+
+            <!-- 0.34 -->
+            <rect x="430" y="46" width="40" height="34" fill="#2A6F6B" opacity="0.85"/>
+            <text x="450" y="100" text-anchor="middle">0.34</text>
+            <text x="450" y="115" text-anchor="middle">[8]</text>
+          </g>
+        </g>
+
+        <text x="350" y="200" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#4A4F58">… а у настоящей LLM таких чисел не 8, а 768, 4096 или больше</text>
+      </svg>
+      <figcaption><strong>Embedding слова «кошка»</strong> — вектор чисел. Каждое число — какое-то «свойство», которому нейросеть выучила своё значение. Зелёные — положительные, красные — отрицательные.</figcaption>
+    </figure>
+
+    <div class="callout highlight">
+      <span class="callout-label">Ключевой момент</span>
+      <p>
+        Эти числа в embedding'е <strong>модель не задаёт вручную</strong>. Они подбираются автоматически в процессе обучения так, чтобы похожие по смыслу слова имели похожие векторы. Никто не говорит «третье число — это про млекопитающее». Модель сама решает, что в это число «упаковать».
+      </p>
+    </div>
+
+    <h3>Геометрия смысла</h3>
+
+    <p>
+      Самое красивое: если посчитать embedding'и для всех слов и нарисовать их (даже в упрощённом 2D-виде), <strong>похожие слова окажутся близко друг к другу</strong>.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Семантические кластеры слов в 2D пространстве">
+        <!-- subtle grid -->
+        <g stroke="#E5DFCE" stroke-width="1">
+          <line x1="40" y1="40" x2="40" y2="340"/>
+          <line x1="40" y1="340" x2="660" y2="340"/>
+        </g>
+        <text x="660" y="355" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">размерность 1</text>
+        <text x="40" y="30" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">размерность 2</text>
+
+        <!-- Cluster 1: animals (top-left) -->
+        <g>
+          <ellipse cx="160" cy="110" rx="75" ry="50" fill="#2A6F6B" opacity="0.08" stroke="#2A6F6B" stroke-width="1" stroke-dasharray="3,3"/>
+          <circle cx="130" cy="100" r="5" fill="#2A6F6B"/>
+          <text x="138" y="95" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">кошка</text>
+          <circle cx="170" cy="125" r="5" fill="#2A6F6B"/>
+          <text x="178" y="120" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">собака</text>
+          <circle cx="195" cy="95" r="5" fill="#2A6F6B"/>
+          <text x="200" y="92" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">тигр</text>
+          <circle cx="140" cy="135" r="5" fill="#2A6F6B"/>
+          <text x="100" y="155" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">волк</text>
+          <text x="120" y="60" font-family="JetBrains Mono, monospace" font-size="11" fill="#2A6F6B" font-weight="bold">ЖИВОТНЫЕ</text>
+        </g>
+
+        <!-- Cluster 2: countries (top-right) -->
+        <g>
+          <ellipse cx="500" cy="120" rx="80" ry="55" fill="#BC4B51" opacity="0.08" stroke="#BC4B51" stroke-width="1" stroke-dasharray="3,3"/>
+          <circle cx="470" cy="110" r="5" fill="#BC4B51"/>
+          <text x="478" y="105" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">Франция</text>
+          <circle cx="510" cy="135" r="5" fill="#BC4B51"/>
+          <text x="518" y="130" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">Италия</text>
+          <circle cx="540" cy="100" r="5" fill="#BC4B51"/>
+          <text x="495" y="80" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">Япония</text>
+          <circle cx="478" cy="145" r="5" fill="#BC4B51"/>
+          <text x="430" y="160" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">Бразилия</text>
+          <text x="460" y="60" font-family="JetBrains Mono, monospace" font-size="11" fill="#BC4B51" font-weight="bold">СТРАНЫ</text>
+        </g>
+
+        <!-- Cluster 3: emotions (bottom-left) -->
+        <g>
+          <ellipse cx="170" cy="270" rx="80" ry="55" fill="#8B6914" opacity="0.08" stroke="#8B6914" stroke-width="1" stroke-dasharray="3,3"/>
+          <circle cx="140" cy="260" r="5" fill="#8B6914"/>
+          <text x="148" y="255" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">радость</text>
+          <circle cx="180" cy="285" r="5" fill="#8B6914"/>
+          <text x="188" y="280" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">грусть</text>
+          <circle cx="200" cy="250" r="5" fill="#8B6914"/>
+          <text x="160" y="240" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">страх</text>
+          <circle cx="155" cy="295" r="5" fill="#8B6914"/>
+          <text x="105" y="315" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">любовь</text>
+          <text x="125" y="220" font-family="JetBrains Mono, monospace" font-size="11" fill="#8B6914" font-weight="bold">ЭМОЦИИ</text>
+        </g>
+
+        <!-- Cluster 4: actions (bottom-right) -->
+        <g>
+          <ellipse cx="500" cy="270" rx="80" ry="55" fill="#1F2329" opacity="0.08" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3"/>
+          <circle cx="470" cy="260" r="5" fill="#1F2329"/>
+          <text x="478" y="255" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">бежать</text>
+          <circle cx="510" cy="285" r="5" fill="#1F2329"/>
+          <text x="518" y="280" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">прыгать</text>
+          <circle cx="540" cy="245" r="5" fill="#1F2329"/>
+          <text x="495" y="240" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">плыть</text>
+          <circle cx="478" cy="295" r="5" fill="#1F2329"/>
+          <text x="430" y="315" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">идти</text>
+          <text x="460" y="220" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329" font-weight="bold">ДЕЙСТВИЯ</text>
+        </g>
+      </svg>
+      <figcaption><strong>Семантическая карта.</strong> В пространстве embedding'ов слова сами собой образуют смысловые кластеры. Это не запрограммировано — модель учится этому из текстов.</figcaption>
+    </figure>
+
+    <div class="callout">
+      <span class="callout-label">Запомни</span>
+      <p>
+        Вектор в LLM — это не «координаты на карте». Это <strong>координаты смысла</strong>. Чем ближе два вектора, тем ближе значения слов.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 3 ============================== -->
+<section class="module" id="m3">
+  <div class="container">
+    <div class="module-number">Модуль 03 · Операции</div>
+    <h2>Сложение, вычитание и магия смысла</h2>
+
+    <p>
+      Если вектор — это просто список чисел, то операции над ними тоже простые. Сложение векторов = сложение их чисел поэлементно.
+    </p>
+
+    <div class="formula">
+      [3, 2] + [1, 2] = [3+1, 2+2] = [4, 4]
+    </div>
+
+    <p>
+      Геометрически это значит: «иди по первой стрелке, потом из её конца — по второй». Получается новый вектор.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Сложение векторов как параллелограмм">
+        <!-- grid -->
+        <g stroke="#E5DFCE" stroke-width="1">
+          <line x1="60" y1="40" x2="60" y2="280"/>
+          <line x1="120" y1="40" x2="120" y2="280"/>
+          <line x1="180" y1="40" x2="180" y2="280"/>
+          <line x1="240" y1="40" x2="240" y2="280"/>
+          <line x1="300" y1="40" x2="300" y2="280"/>
+          <line x1="360" y1="40" x2="360" y2="280"/>
+          <line x1="420" y1="40" x2="420" y2="280"/>
+          <line x1="480" y1="40" x2="480" y2="280"/>
+          <line x1="0" y1="40" x2="540" y2="40"/>
+          <line x1="0" y1="100" x2="540" y2="100"/>
+          <line x1="0" y1="160" x2="540" y2="160"/>
+          <line x1="0" y1="220" x2="540" y2="220"/>
+          <line x1="0" y1="280" x2="540" y2="280"/>
+        </g>
+        <!-- axes -->
+        <line x1="60" y1="280" x2="540" y2="280" stroke="#1F2329" stroke-width="1.5"/>
+        <line x1="60" y1="280" x2="60" y2="20" stroke="#1F2329" stroke-width="1.5"/>
+
+        <defs>
+          <marker id="arrTeal3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+          <marker id="arrRust3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#BC4B51"/>
+          </marker>
+          <marker id="arrSum" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B6914"/>
+          </marker>
+        </defs>
+
+        <!-- vector a = [3, 2] -->
+        <line x1="60" y1="280" x2="240" y2="160" stroke="#2A6F6B" stroke-width="3" marker-end="url(#arrTeal3)"/>
+        <text x="120" y="225" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#2A6F6B">a = [3, 2]</text>
+
+        <!-- vector b = [1, 2] starting from a -->
+        <line x1="240" y1="160" x2="300" y2="40" stroke="#BC4B51" stroke-width="3" marker-end="url(#arrRust3)"/>
+        <text x="280" y="120" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#BC4B51">b = [1, 2]</text>
+
+        <!-- ghost b from origin -->
+        <line x1="60" y1="280" x2="120" y2="160" stroke="#BC4B51" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+        <!-- ghost a translated -->
+        <line x1="120" y1="160" x2="300" y2="40" stroke="#2A6F6B" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+
+        <!-- sum vector a+b = [4, 4] -->
+        <line x1="60" y1="280" x2="300" y2="40" stroke="#8B6914" stroke-width="3.5" marker-end="url(#arrSum)"/>
+        <text x="180" y="155" font-family="Fraunces, serif" font-size="20" font-style="italic" fill="#8B6914">a + b = [4, 4]</text>
+
+        <!-- points -->
+        <circle cx="240" cy="160" r="4" fill="#2A6F6B"/>
+        <circle cx="300" cy="40" r="5" fill="#8B6914"/>
+        <circle cx="120" cy="160" r="3" fill="#BC4B51" opacity="0.5"/>
+
+        <!-- Title -->
+        <text x="300" y="305" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">Сложение = «приставить хвост второй стрелки к голове первой»</text>
+      </svg>
+      <figcaption><strong>Параллелограмм сложения.</strong> Чтобы сложить два вектора, нужно либо сложить их числа поэлементно, либо «пристыковать» один к концу другого.</figcaption>
+    </figure>
+
+    <h3>Вычитание — это «разница»</h3>
+
+    <p>
+      Вычитание векторов работает так же — поэлементно. Геометрически вычитание <code>a − b</code> показывает, как пройти <em>от</em> b <em>к</em> a. Это «стрелка различий».
+    </p>
+
+    <h3>Умножение на число (скаляр)</h3>
+
+    <p>
+      Если умножить вектор на число (например, на 2), его длина изменится, а направление останется тем же. Если умножить на отрицательное число — направление развернётся.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Умножение вектора на скаляр">
+        <!-- baseline -->
+        <line x1="50" y1="170" x2="650" y2="170" stroke="#D4CDB8" stroke-width="1"/>
+
+        <defs>
+          <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+          <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B6914"/>
+          </marker>
+          <marker id="arrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#BC4B51"/>
+          </marker>
+        </defs>
+
+        <!-- v -->
+        <g transform="translate(80, 0)">
+          <line x1="0" y1="170" x2="60" y2="120" stroke="#2A6F6B" stroke-width="3" marker-end="url(#arrA)"/>
+          <text x="20" y="200" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#2A6F6B">v</text>
+          <text x="0" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[3, 2]</text>
+        </g>
+
+        <!-- 2v -->
+        <g transform="translate(220, 0)">
+          <line x1="0" y1="170" x2="120" y2="70" stroke="#8B6914" stroke-width="3" marker-end="url(#arrB)"/>
+          <text x="50" y="200" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#8B6914">2 · v</text>
+          <text x="35" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[6, 4]</text>
+        </g>
+
+        <!-- 0.5v -->
+        <g transform="translate(420, 0)">
+          <line x1="0" y1="170" x2="30" y2="145" stroke="#2A6F6B" stroke-width="3" opacity="0.6" marker-end="url(#arrA)"/>
+          <text x="0" y="200" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#2A6F6B">0.5 · v</text>
+          <text x="0" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[1.5, 1]</text>
+        </g>
+
+        <!-- -v -->
+        <g transform="translate(580, 0)">
+          <line x1="0" y1="170" x2="-60" y2="220" stroke="#BC4B51" stroke-width="3" marker-end="url(#arrC)"/>
+          <text x="-30" y="200" font-family="Fraunces, serif" font-size="18" font-style="italic" fill="#BC4B51">−1 · v</text>
+          <text x="-30" y="230" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[-3, -2]</text>
+        </g>
+
+        <text x="350" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Скаляр меняет длину; знак — направление</text>
+      </svg>
+      <figcaption><strong>Умножение на скаляр.</strong> Умножение на 2 удлиняет вектор вдвое; на 0.5 — укорачивает; на −1 — переворачивает.</figcaption>
+    </figure>
+
+    <h3>А теперь — магия: «Король − Мужчина + Женщина = Королева»</h3>
+
+    <p>
+      Это самый известный пример того, как embedding'и хранят смысл. Если взять вектор слова <em>«король»</em>, вычесть из него вектор <em>«мужчина»</em>, и прибавить вектор <em>«женщина»</em> — получится вектор, очень близкий к <em>«королеве»</em>.
+    </p>
+
+    <p>
+      Почему? Потому что вычитание <code>король − мужчина</code> даёт «вектор королевской власти без пола». А прибавление <em>«женщины»</em> — добавляет женский пол обратно. Результат: королевская власть + женский пол = королева.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Геометрия слов: король минус мужчина плюс женщина равно королева">
+        <!-- subtle grid -->
+        <g stroke="#E5DFCE" stroke-width="0.5" opacity="0.7">
+          <line x1="50" y1="80" x2="650" y2="80"/>
+          <line x1="50" y1="160" x2="650" y2="160"/>
+          <line x1="50" y1="240" x2="650" y2="240"/>
+          <line x1="50" y1="320" x2="650" y2="320"/>
+          <line x1="150" y1="40" x2="150" y2="350"/>
+          <line x1="300" y1="40" x2="300" y2="350"/>
+          <line x1="450" y1="40" x2="450" y2="350"/>
+          <line x1="600" y1="40" x2="600" y2="350"/>
+        </g>
+
+        <!-- labels for axes (conceptual) -->
+        <text x="60" y="60" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">↑ королевская власть</text>
+        <text x="540" y="345" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">мужской пол →</text>
+
+        <!-- 4 word points forming a parallelogram -->
+        <!-- мужчина: low royalty, high male -->
+        <circle cx="500" cy="280" r="7" fill="#2A6F6B"/>
+        <text x="510" y="285" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">мужчина</text>
+
+        <!-- король: high royalty, high male -->
+        <circle cx="500" cy="120" r="7" fill="#2A6F6B"/>
+        <text x="510" y="115" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">король</text>
+
+        <!-- женщина: low royalty, low male (or female) -->
+        <circle cx="200" cy="280" r="7" fill="#BC4B51"/>
+        <text x="100" y="285" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">женщина</text>
+
+        <!-- королева: high royalty, low male -->
+        <circle cx="200" cy="120" r="7" fill="#BC4B51"/>
+        <text x="105" y="115" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">королева</text>
+
+        <!-- vectors showing "gender" direction -->
+        <defs>
+          <marker id="arrM1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B6914"/>
+          </marker>
+        </defs>
+
+        <!-- arrow: мужчина → король (royalty direction) -->
+        <line x1="500" y1="275" x2="500" y2="130" stroke="#8B6914" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrM1)"/>
+        <text x="515" y="205" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#8B6914">+ королевская</text>
+        <text x="515" y="220" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#8B6914">  власть</text>
+
+        <!-- arrow: женщина → королева (same direction!) -->
+        <line x1="200" y1="275" x2="200" y2="130" stroke="#8B6914" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrM1)"/>
+        <text x="60" y="205" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#8B6914">+ королевская</text>
+        <text x="70" y="220" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#8B6914">  власть</text>
+
+        <!-- arrow: мужчина → женщина (gender direction) -->
+        <line x1="495" y1="280" x2="210" y2="280" stroke="#BC4B51" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrM1)"/>
+        <text x="290" y="300" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#BC4B51">мужской → женский пол</text>
+
+        <!-- arrow: король → королева (parallel!) -->
+        <line x1="495" y1="120" x2="210" y2="120" stroke="#BC4B51" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrM1)"/>
+        <text x="290" y="105" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#BC4B51">мужской → женский пол</text>
+
+        <!-- formula at bottom -->
+        <rect x="100" y="350" width="500" height="0.5" fill="#D4CDB8"/>
+      </svg>
+      <figcaption><strong>Параллелограмм смысла.</strong> Стрелка «королевская власть» — одинаковая для пары мужчина→король и женщина→королева. Стрелка «пол» — одинакова для пары король→королева и мужчина→женщина. Поэтому формула работает.</figcaption>
+    </figure>
+
+    <div class="formula">
+      vec(король) − vec(мужчина) + vec(женщина) ≈ vec(королева)
+    </div>
+
+    <div class="callout highlight">
+      <span class="callout-label">Почему это важно</span>
+      <p>
+        Это значит, что <strong>смысловые отношения = геометрические направления</strong> в пространстве векторов. Модель не просто запоминает слова — она «понимает» отношения между ними как геометрию. Точно так же работают аналогии: <em>Париж − Франция + Италия ≈ Рим</em>.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 4 ============================== -->
+<section class="module" id="m4">
+  <div class="container">
+    <div class="module-number">Модуль 04 · Скалярное произведение</div>
+    <h2>Скалярное произведение — измеряем «похожесть»</h2>
+
+    <p>
+      Это самая важная операция в LLM. На ней строится attention — механизм, благодаря которому Transformer вообще работает. Хорошая новость: считать её совсем просто.
+    </p>
+
+    <h3>Как считать</h3>
+    <p>
+      Скалярное произведение двух векторов — это сумма произведений соответствующих чисел.
+    </p>
+
+    <div class="formula">
+      [3, 2] · [1, 4] = 3·1 + 2·4 = 3 + 8 = <strong style="color: #BC4B51;">11</strong>
+    </div>
+
+    <p>
+      Получается одно число (поэтому «скалярное» — скаляр это просто число). Это число и говорит нам, насколько два вектора «согласованы».
+    </p>
+
+    <h3>Геометрический смысл</h3>
+
+    <p>
+      Самое интересное: скалярное произведение зависит от <strong>угла</strong> между векторами.
+    </p>
+
+    <ul style="list-style: none; padding-left: 0; margin: 16px 0 24px;">
+      <li style="padding: 6px 0;">→ Векторы смотрят в одну сторону → произведение <strong style="color: #2A6F6B;">большое и положительное</strong></li>
+      <li style="padding: 6px 0;">→ Векторы перпендикулярны (под 90°) → произведение <strong>равно 0</strong></li>
+      <li style="padding: 6px 0;">→ Векторы смотрят в противоположные стороны → произведение <strong style="color: #BC4B51;">отрицательное</strong></li>
+    </ul>
+
+    <figure>
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Три случая скалярного произведения">
+        <defs>
+          <marker id="arrSim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+          <marker id="arrOrth" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B6914"/>
+          </marker>
+          <marker id="arrOpp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#BC4B51"/>
+          </marker>
+        </defs>
+
+        <!-- Case 1: similar -->
+        <g transform="translate(20, 0)">
+          <text x="100" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">похожи</text>
+          <line x1="50" y1="180" x2="50" y2="180" stroke="#1F2329"/>
+          <circle cx="50" cy="180" r="3" fill="#1F2329"/>
+          <line x1="50" y1="180" x2="150" y2="100" stroke="#2A6F6B" stroke-width="3" marker-end="url(#arrSim)"/>
+          <line x1="50" y1="180" x2="160" y2="120" stroke="#2A6F6B" stroke-width="3" marker-end="url(#arrSim)"/>
+          <!-- arc -->
+          <path d="M 90 148 A 50 50 0 0 1 95 142" stroke="#1F2329" stroke-width="1" fill="none"/>
+          <text x="100" y="155" font-family="JetBrains Mono, monospace" font-size="10" fill="#1F2329">~10°</text>
+          <text x="100" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#2A6F6B" font-weight="bold">a · b ≈ +0.95</text>
+          <text x="100" y="258" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#4A4F58">«близкий смысл»</text>
+        </g>
+
+        <!-- Case 2: perpendicular -->
+        <g transform="translate(240, 0)">
+          <text x="100" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">не связаны</text>
+          <circle cx="50" cy="180" r="3" fill="#1F2329"/>
+          <line x1="50" y1="180" x2="160" y2="100" stroke="#8B6914" stroke-width="3" marker-end="url(#arrOrth)"/>
+          <line x1="50" y1="180" x2="110" y2="220" stroke="#8B6914" stroke-width="3" marker-end="url(#arrOrth)"/>
+          <!-- right angle indicator -->
+          <path d="M 80 168 L 86 175 L 79 181" stroke="#1F2329" stroke-width="1" fill="none"/>
+          <text x="80" y="148" font-family="JetBrains Mono, monospace" font-size="10" fill="#1F2329">90°</text>
+          <text x="100" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#8B6914" font-weight="bold">a · b = 0</text>
+          <text x="100" y="258" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#4A4F58">«нет связи»</text>
+        </g>
+
+        <!-- Case 3: opposite -->
+        <g transform="translate(460, 0)">
+          <text x="100" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">противоположны</text>
+          <circle cx="100" cy="180" r="3" fill="#1F2329"/>
+          <line x1="100" y1="180" x2="180" y2="100" stroke="#BC4B51" stroke-width="3" marker-end="url(#arrOpp)"/>
+          <line x1="100" y1="180" x2="20" y2="220" stroke="#BC4B51" stroke-width="3" marker-end="url(#arrOpp)"/>
+          <!-- arc -->
+          <path d="M 130 165 A 30 30 0 0 1 75 195" stroke="#1F2329" stroke-width="1" fill="none"/>
+          <text x="115" y="155" font-family="JetBrains Mono, monospace" font-size="10" fill="#1F2329">~170°</text>
+          <text x="100" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#BC4B51" font-weight="bold">a · b ≈ −0.95</text>
+          <text x="100" y="258" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#4A4F58">«противоположный смысл»</text>
+        </g>
+      </svg>
+      <figcaption><strong>Три кейса скалярного произведения.</strong> По его знаку и величине можно судить, насколько два вектора похожи по «направлению».</figcaption>
+    </figure>
+
+    <div class="analogy">
+      <div class="analogy-icon">🧭</div>
+      <div class="analogy-text">
+        <strong>Аналогия:</strong> представь, что вектор — это направление, в котором ты идёшь. Скалярное произведение показывает, насколько два путника идут в одну сторону. Если идут в одну — большое число. Если в разные — отрицательное. Если перпендикулярно — ноль.
+      </div>
+    </div>
+
+    <h3>Косинусная схожесть</h3>
+
+    <p>
+      В LLM часто используют <strong>косинусную схожесть</strong> — это то же скалярное произведение, но «нормализованное» (поделённое на длины векторов). Результат всегда от −1 до +1.
+    </p>
+
+    <div class="formula">
+      cos(угол) = (a · b) / (|a| × |b|)
+    </div>
+
+    <p>
+      Это удобно, потому что не зависит от того, насколько «длинные» векторы, а только от направления — то есть только от смысла.
+    </p>
+
+    <h3>Зачем это в LLM</h3>
+
+    <p>
+      Когда модель обрабатывает предложение <em>«кошка села на ___»</em>, ей нужно решить, какие из предыдущих слов важны для предсказания следующего. Она берёт вектор текущей позиции и считает скалярное произведение с векторами всех предыдущих слов.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Скалярное произведение в attention">
+        <!-- Query vector at top -->
+        <g>
+          <text x="350" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">текущий контекст: «кошка села на …»</text>
+          <rect x="280" y="50" width="140" height="40" rx="4" fill="#F4D35E" opacity="0.4" stroke="#1F2329" stroke-width="1.5"/>
+          <text x="350" y="76" text-anchor="middle" font-family="Fraunces, serif" font-size="14" fill="#1F2329">вектор «на»</text>
+        </g>
+
+        <!-- Candidate words and similarity scores -->
+        <g transform="translate(0, 130)">
+          <!-- header -->
+          <text x="120" y="0" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">слово</text>
+          <text x="350" y="0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">скалярное произведение с «на»</text>
+          <text x="630" y="0" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">оценка</text>
+
+          <!-- Row 1: стул -->
+          <g transform="translate(0, 25)">
+            <text x="120" y="14" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">стул</text>
+            <rect x="180" y="3" width="280" height="18" fill="#E5DFCE" rx="2"/>
+            <rect x="180" y="3" width="240" height="18" fill="#2A6F6B" rx="2" opacity="0.85"/>
+            <text x="630" y="16" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B" font-weight="bold">+8.7</text>
+          </g>
+
+          <!-- Row 2: диван -->
+          <g transform="translate(0, 55)">
+            <text x="120" y="14" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">диван</text>
+            <rect x="180" y="3" width="280" height="18" fill="#E5DFCE" rx="2"/>
+            <rect x="180" y="3" width="220" height="18" fill="#2A6F6B" rx="2" opacity="0.75"/>
+            <text x="630" y="16" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B" font-weight="bold">+7.9</text>
+          </g>
+
+          <!-- Row 3: ковёр -->
+          <g transform="translate(0, 85)">
+            <text x="120" y="14" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">ковёр</text>
+            <rect x="180" y="3" width="280" height="18" fill="#E5DFCE" rx="2"/>
+            <rect x="180" y="3" width="180" height="18" fill="#2A6F6B" rx="2" opacity="0.65"/>
+            <text x="630" y="16" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B" font-weight="bold">+6.5</text>
+          </g>
+
+          <!-- Row 4: окно -->
+          <g transform="translate(0, 115)">
+            <text x="120" y="14" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">окно</text>
+            <rect x="180" y="3" width="280" height="18" fill="#E5DFCE" rx="2"/>
+            <rect x="180" y="3" width="60" height="18" fill="#8B6914" rx="2" opacity="0.6"/>
+            <text x="630" y="16" font-family="JetBrains Mono, monospace" font-size="13" fill="#8B6914" font-weight="bold">+1.8</text>
+          </g>
+
+          <!-- Row 5: парламент -->
+          <g transform="translate(0, 145)">
+            <text x="100" y="14" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">парламент</text>
+            <rect x="180" y="3" width="280" height="18" fill="#E5DFCE" rx="2"/>
+            <rect x="180" y="3" width="20" height="18" fill="#BC4B51" rx="2" opacity="0.5"/>
+            <text x="630" y="16" font-family="JetBrains Mono, monospace" font-size="13" fill="#BC4B51" font-weight="bold">−0.3</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption><strong>Скалярное произведение = голосование за следующее слово.</strong> Чем больше произведение, тем сильнее «голос». Модель выбирает следующее слово на основе таких оценок.</figcaption>
+    </figure>
+
+    <div class="callout">
+      <span class="callout-label">Запомни</span>
+      <p>
+        <strong>Скалярное произведение = мера согласованности направлений.</strong> Это базовый инструмент LLM, чтобы спросить «насколько эти два смысла подходят друг другу?»
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 5 ============================== -->
+<section class="module" id="m5">
+  <div class="container">
+    <div class="module-number">Модуль 05 · Матрицы</div>
+    <h2>Матрицы — где живут знания модели</h2>
+
+    <p>
+      <strong>Матрица</strong> — это просто прямоугольная таблица чисел. У неё есть строки (горизонтально) и столбцы (вертикально). Размер матрицы записывают как <code>строки × столбцы</code>.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Матрица 3 на 4 как таблица чисел">
+        <text x="300" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Матрица размера 3 × 4 (3 строки, 4 столбца)</text>
+
+        <!-- Brackets -->
+        <path d="M 130 70 L 110 70 L 110 220 L 130 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+        <path d="M 470 70 L 490 70 L 490 220 L 470 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+
+        <!-- 3x4 grid with values -->
+        <g font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329">
+          <!-- Row 1 -->
+          <rect x="140" y="80" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="180" y="105" text-anchor="middle">0.4</text>
+          <rect x="220" y="80" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="260" y="105" text-anchor="middle">0.1</text>
+          <rect x="300" y="80" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="340" y="105" text-anchor="middle">0.8</text>
+          <rect x="380" y="80" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="420" y="105" text-anchor="middle">−0.2</text>
+
+          <!-- Row 2 -->
+          <rect x="140" y="120" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="180" y="145" text-anchor="middle">0.2</text>
+          <rect x="220" y="120" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="260" y="145" text-anchor="middle">0.9</text>
+          <rect x="300" y="120" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="340" y="145" text-anchor="middle">0.3</text>
+          <rect x="380" y="120" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="420" y="145" text-anchor="middle">0.5</text>
+
+          <!-- Row 3 -->
+          <rect x="140" y="160" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="180" y="185" text-anchor="middle">0.7</text>
+          <rect x="220" y="160" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="260" y="185" text-anchor="middle">−0.5</text>
+          <rect x="300" y="160" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="340" y="185" text-anchor="middle">0.1</text>
+          <rect x="380" y="160" width="80" height="40" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="420" y="185" text-anchor="middle">0.4</text>
+        </g>
+
+        <!-- Row indicator -->
+        <g>
+          <rect x="138" y="118" width="324" height="44" fill="none" stroke="#2A6F6B" stroke-width="2.5"/>
+          <text x="60" y="148" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#2A6F6B">строка →</text>
+        </g>
+
+        <!-- Column indicator -->
+        <g>
+          <rect x="298" y="78" width="84" height="124" fill="none" stroke="#BC4B51" stroke-width="2.5"/>
+          <text x="340" y="240" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#BC4B51">↑ столбец</text>
+        </g>
+      </svg>
+      <figcaption>Простая <strong>матрица 3 × 4</strong>. Зелёным выделена строка, красным — столбец.</figcaption>
+    </figure>
+
+    <h3>Матрицы внутри LLM</h3>
+
+    <p>
+      Каждый <em>слой</em> нейросети — это, по сути, одна или несколько матриц. Когда говорят, что модель имеет <strong>175 миллиардов параметров</strong>, это значит, что во всех её матрицах вместе — 175 миллиардов чисел.
+    </p>
+
+    <p>
+      Все «знания» модели хранятся именно в этих числах. Обучение — это процесс <strong>подбора</strong> этих чисел так, чтобы модель давала правильные ответы.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Слой нейросети как матрица">
+        <text x="350" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Один слой = одна матрица. Вход преобразуется в выход.</text>
+
+        <!-- Input vector (left) -->
+        <g transform="translate(40, 80)">
+          <text x="40" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">входной вектор</text>
+          <path d="M 0 0 L -10 0 L -10 220 L 0 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 80 0 L 90 0 L 90 220 L 80 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <g font-family="JetBrains Mono, monospace" font-size="13" fill="#1F2329">
+            <rect x="0" y="0" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="22" text-anchor="middle">0.21</text>
+            <rect x="0" y="36" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="58" text-anchor="middle">−0.4</text>
+            <rect x="0" y="72" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="94" text-anchor="middle">0.88</text>
+            <rect x="0" y="108" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="130" text-anchor="middle">0.07</text>
+            <rect x="0" y="144" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="166" text-anchor="middle">−0.15</text>
+            <rect x="0" y="180" width="80" height="36" fill="#F4D35E" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="40" y="202" text-anchor="middle">0.62</text>
+          </g>
+          <text x="40" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">6 чисел</text>
+        </g>
+
+        <!-- Multiplication symbol -->
+        <text x="160" y="200" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="28" fill="#2A6F6B">×</text>
+
+        <!-- Weight matrix (middle) -->
+        <g transform="translate(200, 80)">
+          <text x="170" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">матрица весов слоя</text>
+          <path d="M 0 0 L -10 0 L -10 220 L 0 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 340 0 L 350 0 L 350 220 L 340 220" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <!-- 6x4 mini cells with heat-color values -->
+          <g>
+            <!-- generate 6 rows x 4 cols -->
+            <!-- row 1 -->
+            <rect x="0" y="0" width="85" height="36" fill="#2A6F6B" opacity="0.7"/><text x="42" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.4</text>
+            <rect x="85" y="0" width="85" height="36" fill="#2A6F6B" opacity="0.2"/><text x="127" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.1</text>
+            <rect x="170" y="0" width="85" height="36" fill="#2A6F6B" opacity="0.85"/><text x="212" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.8</text>
+            <rect x="255" y="0" width="85" height="36" fill="#BC4B51" opacity="0.4"/><text x="297" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">−0.2</text>
+            <!-- row 2 -->
+            <rect x="0" y="36" width="85" height="36" fill="#2A6F6B" opacity="0.3"/><text x="42" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.2</text>
+            <rect x="85" y="36" width="85" height="36" fill="#2A6F6B" opacity="0.9"/><text x="127" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.9</text>
+            <rect x="170" y="36" width="85" height="36" fill="#2A6F6B" opacity="0.5"/><text x="212" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.3</text>
+            <rect x="255" y="36" width="85" height="36" fill="#2A6F6B" opacity="0.6"/><text x="297" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.5</text>
+            <!-- row 3 -->
+            <rect x="0" y="72" width="85" height="36" fill="#2A6F6B" opacity="0.75"/><text x="42" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.7</text>
+            <rect x="85" y="72" width="85" height="36" fill="#BC4B51" opacity="0.7"/><text x="127" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">−0.5</text>
+            <rect x="170" y="72" width="85" height="36" fill="#2A6F6B" opacity="0.2"/><text x="212" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.1</text>
+            <rect x="255" y="72" width="85" height="36" fill="#2A6F6B" opacity="0.5"/><text x="297" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.4</text>
+            <!-- row 4 -->
+            <rect x="0" y="108" width="85" height="36" fill="#2A6F6B" opacity="0.4"/><text x="42" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.3</text>
+            <rect x="85" y="108" width="85" height="36" fill="#BC4B51" opacity="0.5"/><text x="127" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">−0.3</text>
+            <rect x="170" y="108" width="85" height="36" fill="#2A6F6B" opacity="0.7"/><text x="212" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.6</text>
+            <rect x="255" y="108" width="85" height="36" fill="#2A6F6B" opacity="0.85"/><text x="297" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.8</text>
+            <!-- row 5 -->
+            <rect x="0" y="144" width="85" height="36" fill="#2A6F6B" opacity="0.6"/><text x="42" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.5</text>
+            <rect x="85" y="144" width="85" height="36" fill="#2A6F6B" opacity="0.3"/><text x="127" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.2</text>
+            <rect x="170" y="144" width="85" height="36" fill="#BC4B51" opacity="0.55"/><text x="212" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">−0.4</text>
+            <rect x="255" y="144" width="85" height="36" fill="#2A6F6B" opacity="0.5"/><text x="297" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.4</text>
+            <!-- row 6 -->
+            <rect x="0" y="180" width="85" height="36" fill="#2A6F6B" opacity="0.85"/><text x="42" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.8</text>
+            <rect x="85" y="180" width="85" height="36" fill="#2A6F6B" opacity="0.5"/><text x="127" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.4</text>
+            <rect x="170" y="180" width="85" height="36" fill="#2A6F6B" opacity="0.3"/><text x="212" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.2</text>
+            <rect x="255" y="180" width="85" height="36" fill="#2A6F6B" opacity="0.7"/><text x="297" y="202" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3">0.6</text>
+          </g>
+          <text x="170" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">6 × 4 = 24 «выученных» числа</text>
+        </g>
+
+        <!-- = sign -->
+        <text x="580" y="200" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="28" fill="#2A6F6B">=</text>
+
+        <!-- Output vector (right) -->
+        <g transform="translate(610, 80)">
+          <text x="40" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">выходной вектор</text>
+          <path d="M 0 0 L -10 0 L -10 145 L 0 145" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 60 0 L 70 0 L 70 145 L 60 145" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <g font-family="JetBrains Mono, monospace" font-size="12" fill="#1F2329">
+            <rect x="0" y="0" width="60" height="36" fill="#BC4B51" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="30" y="22" text-anchor="middle">1.04</text>
+            <rect x="0" y="36" width="60" height="36" fill="#BC4B51" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="30" y="58" text-anchor="middle">−0.55</text>
+            <rect x="0" y="72" width="60" height="36" fill="#BC4B51" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="30" y="94" text-anchor="middle">0.71</text>
+            <rect x="0" y="108" width="60" height="36" fill="#BC4B51" opacity="0.3" stroke="#D4CDB8"/>
+            <text x="30" y="130" text-anchor="middle">0.49</text>
+          </g>
+          <text x="30" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">4 числа</text>
+        </g>
+
+        <text x="350" y="335" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#4A4F58">входной вектор × матрица весов = новый, преобразованный вектор</text>
+      </svg>
+      <figcaption><strong>Матрица как «знания» слоя.</strong> Цветом показана сила числа: насыщенный зелёный — большое положительное, красный — отрицательное. Эти числа модель подбирает на обучении.</figcaption>
+    </figure>
+
+    <div class="callout">
+      <span class="callout-label">Масштаб LLM</span>
+      <p>
+        Один слой Transformer содержит несколько матриц размером, например, 4096 × 4096 — это <strong>16,7 миллиона чисел</strong> в одной матрице. А слоёв в большой модели — десятки или сотни. Отсюда и миллиарды параметров.
+      </p>
+    </div>
+
+    <h3>Матрица как «преобразователь»</h3>
+
+    <p>
+      Главная идея: матрица не просто хранит числа — она <strong>преобразует</strong> один вектор в другой. Подал на вход один вектор → получил на выходе другой. Это как функция, но реализованная через таблицу чисел.
+    </p>
+
+    <p>
+      Чтобы понять, <em>как именно</em> матрица превращает вектор в новый вектор, нам нужно научиться умножать матрицу на вектор. Этим займёмся в следующем модуле.
+    </p>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 6 ============================== -->
+<section class="module" id="m6">
+  <div class="container">
+    <div class="module-number">Модуль 06 · Умножение матриц</div>
+    <h2>Умножение матрицы на вектор — сердце нейросети</h2>
+
+    <p>
+      Это самая главная операция в LLM. Если ты поймёшь её, то поймёшь и forward pass всей нейросети.
+    </p>
+
+    <h3>Простое правило</h3>
+
+    <p>
+      Чтобы умножить матрицу на вектор, мы делаем <strong>скалярное произведение</strong> каждой строки матрицы с вектором. Получаем новый вектор, в котором столько чисел, сколько было строк.
+    </p>
+
+    <div class="callout highlight">
+      <span class="callout-label">Краткая формула</span>
+      <p>
+        <strong>Каждая строка матрицы → одно число в новом векторе.</strong> Это число = скалярное произведение строки с входным вектором.
+      </p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Пошаговое умножение матрицы на вектор">
+        <text x="350" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Шаг 1: первая строка × вектор → первое число результата</text>
+
+        <!-- Matrix -->
+        <g transform="translate(60, 70)">
+          <path d="M 0 0 L -10 0 L -10 180 L 0 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 180 0 L 190 0 L 190 180 L 180 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+
+          <!-- Row 1 — highlighted -->
+          <rect x="0" y="0" width="180" height="60" fill="#2A6F6B" opacity="0.18" stroke="#2A6F6B" stroke-width="2"/>
+          <g font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329">
+            <text x="30" y="38" text-anchor="middle">2</text>
+            <text x="90" y="38" text-anchor="middle">1</text>
+            <text x="150" y="38" text-anchor="middle">3</text>
+            <!-- Row 2 -->
+            <text x="30" y="98" text-anchor="middle" opacity="0.4">0</text>
+            <text x="90" y="98" text-anchor="middle" opacity="0.4">4</text>
+            <text x="150" y="98" text-anchor="middle" opacity="0.4">1</text>
+            <!-- Row 3 -->
+            <text x="30" y="158" text-anchor="middle" opacity="0.4">5</text>
+            <text x="90" y="158" text-anchor="middle" opacity="0.4">2</text>
+            <text x="150" y="158" text-anchor="middle" opacity="0.4">0</text>
+          </g>
+          <!-- divider lines -->
+          <line x1="0" y1="60" x2="180" y2="60" stroke="#D4CDB8" stroke-width="1"/>
+          <line x1="0" y1="120" x2="180" y2="120" stroke="#D4CDB8" stroke-width="1"/>
+        </g>
+
+        <!-- × symbol -->
+        <text x="290" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="24" fill="#2A6F6B">×</text>
+
+        <!-- Vector -->
+        <g transform="translate(330, 70)">
+          <path d="M 0 0 L -10 0 L -10 180 L 0 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 60 0 L 70 0 L 70 180 L 60 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <rect x="0" y="0" width="60" height="180" fill="#BC4B51" opacity="0.18" stroke="#BC4B51" stroke-width="2"/>
+          <g font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329">
+            <text x="30" y="38" text-anchor="middle">4</text>
+            <line x1="0" y1="60" x2="60" y2="60" stroke="#D4CDB8" stroke-width="1"/>
+            <text x="30" y="98" text-anchor="middle">2</text>
+            <line x1="0" y1="120" x2="60" y2="120" stroke="#D4CDB8" stroke-width="1"/>
+            <text x="30" y="158" text-anchor="middle">1</text>
+          </g>
+        </g>
+
+        <!-- = -->
+        <text x="440" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="24" fill="#2A6F6B">=</text>
+
+        <!-- Computation breakdown -->
+        <g transform="translate(470, 145)">
+          <text x="0" y="0" font-family="Fraunces, serif" font-size="14" fill="#1F2329">первая строка · вектор</text>
+          <text x="0" y="22" font-family="JetBrains Mono, monospace" font-size="14" fill="#2A6F6B">= 2·4 + 1·2 + 3·1</text>
+          <text x="0" y="42" font-family="JetBrains Mono, monospace" font-size="14" fill="#2A6F6B">= 8 + 2 + 3</text>
+          <text x="0" y="62" font-family="JetBrains Mono, monospace" font-size="18" fill="#BC4B51" font-weight="bold">= 13</text>
+        </g>
+
+        <!-- Result vector -->
+        <g transform="translate(60, 270)">
+          <text x="0" y="-10" font-family="Fraunces, serif" font-size="14" fill="#1F2329">результат:</text>
+          <path d="M 80 0 L 70 0 L 70 60 L 80 60" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 140 0 L 150 0 L 150 60 L 140 60" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <rect x="80" y="0" width="60" height="20" fill="#F4D35E" opacity="0.5" stroke="#1F2329" stroke-width="1.5"/>
+          <text x="110" y="15" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#1F2329" font-weight="bold">13</text>
+          <rect x="80" y="20" width="60" height="20" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="110" y="35" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#4A4F58">?</text>
+          <rect x="80" y="40" width="60" height="20" fill="#FFFCF3" stroke="#D4CDB8"/>
+          <text x="110" y="55" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#4A4F58">?</text>
+        </g>
+
+        <text x="350" y="340" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#4A4F58">Дальше повторим то же самое со строкой 2 и 3.</text>
+      </svg>
+      <figcaption><strong>Шаг 1.</strong> Первое число результата — скалярное произведение первой строки матрицы с вектором.</figcaption>
+    </figure>
+
+    <figure>
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Финальный результат умножения матрицы на вектор">
+        <text x="350" y="30" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Полный результат — повторяем для каждой строки</text>
+
+        <!-- Matrix -->
+        <g transform="translate(60, 70)">
+          <path d="M 0 0 L -10 0 L -10 180 L 0 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 180 0 L 190 0 L 190 180 L 180 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <g font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329">
+            <text x="30" y="38" text-anchor="middle">2</text>
+            <text x="90" y="38" text-anchor="middle">1</text>
+            <text x="150" y="38" text-anchor="middle">3</text>
+            <text x="30" y="98" text-anchor="middle">0</text>
+            <text x="90" y="98" text-anchor="middle">4</text>
+            <text x="150" y="98" text-anchor="middle">1</text>
+            <text x="30" y="158" text-anchor="middle">5</text>
+            <text x="90" y="158" text-anchor="middle">2</text>
+            <text x="150" y="158" text-anchor="middle">0</text>
+          </g>
+          <line x1="0" y1="60" x2="180" y2="60" stroke="#D4CDB8" stroke-width="1"/>
+          <line x1="0" y1="120" x2="180" y2="120" stroke="#D4CDB8" stroke-width="1"/>
+        </g>
+
+        <text x="290" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="24" fill="#2A6F6B">×</text>
+
+        <!-- Vector -->
+        <g transform="translate(330, 70)">
+          <path d="M 0 0 L -10 0 L -10 180 L 0 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 60 0 L 70 0 L 70 180 L 60 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <g font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329">
+            <text x="30" y="38" text-anchor="middle">4</text>
+            <text x="30" y="98" text-anchor="middle">2</text>
+            <text x="30" y="158" text-anchor="middle">1</text>
+          </g>
+          <line x1="0" y1="60" x2="60" y2="60" stroke="#D4CDB8" stroke-width="1"/>
+          <line x1="0" y1="120" x2="60" y2="120" stroke="#D4CDB8" stroke-width="1"/>
+        </g>
+
+        <text x="440" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="24" fill="#2A6F6B">=</text>
+
+        <!-- Result -->
+        <g transform="translate(470, 70)">
+          <path d="M 0 0 L -10 0 L -10 180 L 0 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <path d="M 80 0 L 90 0 L 90 180 L 80 180" stroke="#1F2329" stroke-width="2" fill="none"/>
+          <rect x="0" y="0" width="80" height="60" fill="#F4D35E" opacity="0.4" stroke="#D4CDB8"/>
+          <text x="40" y="38" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329" font-weight="bold">13</text>
+          <rect x="0" y="60" width="80" height="60" fill="#F4D35E" opacity="0.4" stroke="#D4CDB8"/>
+          <text x="40" y="98" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329" font-weight="bold">9</text>
+          <rect x="0" y="120" width="80" height="60" fill="#F4D35E" opacity="0.4" stroke="#D4CDB8"/>
+          <text x="40" y="158" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" fill="#1F2329" font-weight="bold">24</text>
+        </g>
+
+        <!-- Annotations -->
+        <text x="610" y="98" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">2·4+1·2+3·1</text>
+        <text x="610" y="158" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">0·4+4·2+1·1</text>
+        <text x="610" y="218" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">5·4+2·2+0·1</text>
+      </svg>
+      <figcaption><strong>Финал.</strong> Матрица 3×3 умножилась на вектор из 3 чисел и дала новый вектор из 3 чисел. Каждая строка дала ровно одно число.</figcaption>
+    </figure>
+
+    <h3>Что это значит для LLM</h3>
+
+    <p>
+      Когда ты подаёшь embedding слова на вход слою, происходит ровно это умножение. На выходе ты получаешь <em>преобразованный</em> вектор — новый embedding, в котором информация уже «обработана» этим слоем.
+    </p>
+
+    <p>
+      Если в большой модели слой имеет матрицу 4096 × 4096, то одно прохождение через него — это <strong>~16 миллионов умножений и сложений</strong>. И таких слоёв десятки. Поэтому LLM требуют столько вычислений.
+    </p>
+
+    <div class="analogy">
+      <div class="analogy-icon">🎛️</div>
+      <div class="analogy-text">
+        <strong>Аналогия:</strong> представь, что вектор — это сигнал. Матрица — это эквалайзер с тысячами ручек. Умножение матрицы на вектор — это пропускание сигнала через эквалайзер. На выходе — тот же сигнал, но «обработанный».
+      </div>
+    </div>
+
+    <h3>Forward pass — путь сквозь модель</h3>
+
+    <p>
+      Полное прохождение через LLM выглядит так:
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Forward pass: вектор проходит через несколько слоёв">
+        <defs>
+          <marker id="arrFlow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+          </marker>
+        </defs>
+
+        <!-- Input -->
+        <g transform="translate(20, 100)">
+          <rect x="0" y="0" width="80" height="80" fill="#F4D35E" opacity="0.4" stroke="#1F2329" stroke-width="1.5" rx="3"/>
+          <text x="40" y="35" text-anchor="middle" font-family="Fraunces, serif" font-size="13" fill="#1F2329">embedding</text>
+          <text x="40" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="13" fill="#1F2329">слова</text>
+          <text x="40" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">вход</text>
+        </g>
+
+        <!-- Layer 1 -->
+        <line x1="105" y1="140" x2="135" y2="140" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrFlow)"/>
+        <g transform="translate(140, 100)">
+          <rect x="0" y="0" width="80" height="80" fill="#2A6F6B" opacity="0.15" stroke="#2A6F6B" stroke-width="1.5" rx="3"/>
+          <text x="40" y="38" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">× W₁</text>
+          <text x="40" y="58" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#4A4F58">слой 1</text>
+          <text x="40" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">умножение</text>
+        </g>
+
+        <!-- Layer 2 -->
+        <line x1="225" y1="140" x2="255" y2="140" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrFlow)"/>
+        <g transform="translate(260, 100)">
+          <rect x="0" y="0" width="80" height="80" fill="#2A6F6B" opacity="0.15" stroke="#2A6F6B" stroke-width="1.5" rx="3"/>
+          <text x="40" y="38" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">× W₂</text>
+          <text x="40" y="58" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#4A4F58">слой 2</text>
+        </g>
+
+        <!-- ... -->
+        <text x="365" y="145" font-family="JetBrains Mono, monospace" font-size="14" fill="#4A4F58">···</text>
+
+        <!-- Layer N -->
+        <line x1="385" y1="140" x2="415" y2="140" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrFlow)"/>
+        <g transform="translate(420, 100)">
+          <rect x="0" y="0" width="80" height="80" fill="#2A6F6B" opacity="0.15" stroke="#2A6F6B" stroke-width="1.5" rx="3"/>
+          <text x="40" y="38" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">× W_N</text>
+          <text x="40" y="58" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#4A4F58">слой N</text>
+        </g>
+
+        <!-- Output -->
+        <line x1="505" y1="140" x2="535" y2="140" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrFlow)"/>
+        <g transform="translate(540, 100)">
+          <rect x="0" y="0" width="100" height="80" fill="#BC4B51" opacity="0.2" stroke="#1F2329" stroke-width="1.5" rx="3"/>
+          <text x="50" y="35" text-anchor="middle" font-family="Fraunces, serif" font-size="13" fill="#1F2329">вероятности</text>
+          <text x="50" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="13" fill="#1F2329">слов</text>
+          <text x="50" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">выход</text>
+        </g>
+
+        <text x="350" y="40" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Forward pass = вектор × матрица × матрица × … × матрица</text>
+        <text x="350" y="240" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#4A4F58">Каждый слой — одно (или несколько) умножений матрицы на вектор.</text>
+      </svg>
+      <figcaption><strong>Forward pass.</strong> Вектор последовательно умножается на матрицы каждого слоя. Между ними ещё есть нелинейные функции (это уже не линейная алгебра), но костяк — именно матричное умножение.</figcaption>
+    </figure>
+
+    <p class="note">
+      На самом деле в LLM умножают сразу матрицу на матрицу (когда обрабатывают много слов параллельно), но это просто «несколько векторов одновременно» — правило то же.
+    </p>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 7 ============================== -->
+<section class="module" id="m7">
+  <div class="container">
+    <div class="module-number">Модуль 07 · Линейные преобразования</div>
+    <h2>Что слой делает с пространством</h2>
+
+    <p>
+      Когда матрица умножается на вектор, она его преобразует. Но если посмотреть шире — матрица преобразует <em>всё пространство сразу</em>. Каждая точка переезжает в новое место, и происходит это согласованно: параллельные линии остаются параллельными, начало координат не сдвигается, расстояния могут меняться.
+    </p>
+
+    <p>
+      Это называется <strong>линейное преобразование</strong>. Его можно представить тремя способами: растяжение, сжатие, поворот, отражение или их комбинация.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Линейные преобразования: исходная сетка и три варианта преобразования">
+        <text x="350" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-style="italic" fill="#1F2329">Матрица преобразует всё пространство, а не только один вектор</text>
+
+        <!-- Original grid -->
+        <g transform="translate(40, 60)">
+          <text x="60" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">исходная сетка</text>
+          <g stroke="#D4CDB8" stroke-width="0.8">
+            <line x1="0" y1="0" x2="120" y2="0"/>
+            <line x1="0" y1="30" x2="120" y2="30"/>
+            <line x1="0" y1="60" x2="120" y2="60"/>
+            <line x1="0" y1="90" x2="120" y2="90"/>
+            <line x1="0" y1="120" x2="120" y2="120"/>
+            <line x1="0" y1="0" x2="0" y2="120"/>
+            <line x1="30" y1="0" x2="30" y2="120"/>
+            <line x1="60" y1="0" x2="60" y2="120"/>
+            <line x1="90" y1="0" x2="90" y2="120"/>
+            <line x1="120" y1="0" x2="120" y2="120"/>
+          </g>
+          <!-- axes -->
+          <line x1="0" y1="120" x2="125" y2="120" stroke="#1F2329" stroke-width="1.5"/>
+          <line x1="0" y1="120" x2="0" y2="-5" stroke="#1F2329" stroke-width="1.5"/>
+          <!-- example shape: a "kitten" -->
+          <polygon points="30,90 60,75 90,90 75,105 45,105" fill="#2A6F6B" opacity="0.5" stroke="#2A6F6B" stroke-width="1.5"/>
+          <circle cx="60" cy="75" r="3" fill="#2A6F6B"/>
+          <text x="60" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[[1, 0],</text>
+          <text x="60" y="195" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">  [0, 1]]</text>
+          <text x="60" y="215" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">единичная матрица</text>
+          <text x="60" y="230" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#4A4F58">(ничего не меняет)</text>
+        </g>
+
+        <!-- Stretch -->
+        <g transform="translate(220, 60)">
+          <text x="60" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">растяжение</text>
+          <g stroke="#D4CDB8" stroke-width="0.8">
+            <line x1="0" y1="0" x2="180" y2="0"/>
+            <line x1="0" y1="30" x2="180" y2="30"/>
+            <line x1="0" y1="60" x2="180" y2="60"/>
+            <line x1="0" y1="90" x2="180" y2="90"/>
+            <line x1="0" y1="120" x2="180" y2="120"/>
+            <line x1="0" y1="0" x2="0" y2="120"/>
+            <line x1="45" y1="0" x2="45" y2="120"/>
+            <line x1="90" y1="0" x2="90" y2="120"/>
+            <line x1="135" y1="0" x2="135" y2="120"/>
+            <line x1="180" y1="0" x2="180" y2="120"/>
+          </g>
+          <line x1="0" y1="120" x2="185" y2="120" stroke="#1F2329" stroke-width="1.5"/>
+          <line x1="0" y1="120" x2="0" y2="-5" stroke="#1F2329" stroke-width="1.5"/>
+          <polygon points="45,90 90,75 135,90 112,105 67,105" fill="#2A6F6B" opacity="0.5" stroke="#2A6F6B" stroke-width="1.5"/>
+          <text x="60" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[[1.5, 0],</text>
+          <text x="60" y="195" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">  [0,  1]]</text>
+          <text x="60" y="215" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">растягивает по x</text>
+        </g>
+
+        <!-- Rotate -->
+        <g transform="translate(420, 60)">
+          <text x="60" y="-10" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">поворот</text>
+          <g stroke="#D4CDB8" stroke-width="0.8">
+            <!-- rotated grid (45deg-ish) -->
+            <line x1="0" y1="120" x2="85" y2="35" stroke-opacity="0.6"/>
+            <line x1="0" y1="120" x2="60" y2="180" stroke-opacity="0"/>
+            <!-- proper rotated grid -->
+          </g>
+          <!-- proper grid lines rotated by ~30deg -->
+          <g stroke="#D4CDB8" stroke-width="0.8">
+            <!-- horizontal-ish (rotated 30 ccw) -->
+            <line x1="0" y1="120" x2="104" y2="60"/>
+            <line x1="15" y1="146" x2="119" y2="86"/>
+            <line x1="-15" y1="94" x2="89" y2="34"/>
+            <line x1="-30" y1="68" x2="74" y2="8"/>
+            <!-- vertical-ish -->
+            <line x1="0" y1="120" x2="-30" y2="68"/>
+            <line x1="30" y1="103" x2="0" y2="51"/>
+            <line x1="60" y1="86" x2="30" y2="34"/>
+            <line x1="90" y1="69" x2="60" y2="17"/>
+          </g>
+          <line x1="0" y1="120" x2="125" y2="120" stroke="#1F2329" stroke-width="1.5" opacity="0.3"/>
+          <line x1="0" y1="120" x2="0" y2="-5" stroke="#1F2329" stroke-width="1.5" opacity="0.3"/>
+          <!-- rotated shape -->
+          <g transform="translate(0, 120) rotate(-30)">
+            <polygon points="30,-30 60,-45 90,-30 75,-15 45,-15" fill="#2A6F6B" opacity="0.5" stroke="#2A6F6B" stroke-width="1.5"/>
+          </g>
+          <text x="60" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">[[cos, -sin],</text>
+          <text x="60" y="195" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#4A4F58">  [sin,  cos]]</text>
+          <text x="60" y="215" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">поворачивает</text>
+        </g>
+      </svg>
+      <figcaption><strong>Три типа линейных преобразований.</strong> Любая матрица — это какое-то такое преобразование (или их комбинация).</figcaption>
+    </figure>
+
+    <h3>Что это значит для LLM</h3>
+
+    <p>
+      Каждый слой Transformer'a — это <strong>линейное преобразование</strong> пространства смыслов. Слой как бы «перетасовывает» точки-слова, чтобы выделить нужную информацию.
+    </p>
+
+    <p>
+      Например, один слой может «приближать» слова, описывающие время. Другой — выделять связи между подлежащим и сказуемым. Третий — учитывать, кто действует, а кто — действие принимает.
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Ключевая мысль</span>
+      <p>
+        Глубокая нейросеть — это <strong>цепочка преобразований</strong>. Каждое отдельно — простое (умножение на матрицу). Но 96 таких преобразований подряд (как в GPT-3) порождают невероятно сложное поведение.
+      </p>
+    </div>
+
+    <h3>Почему просто умножения не достаточно</h3>
+
+    <p>
+      Чисто линейные преобразования имеют ограничение: <em>цепочка из десятка матриц математически равна одной большой матрице</em>. То есть просто складывая слои, мы бы ничего нового не получили.
+    </p>
+
+    <p>
+      Чтобы модель могла учить нелинейные паттерны, между слоями вставляют <strong>нелинейные функции активации</strong> (например, ReLU, GELU). Они «ломают линейность» и делают возможным сложное поведение. Это уже выходит за рамки чистой линейной алгебры, но важно об этом помнить.
+    </p>
+
+    <div class="formula">
+      выход = activation( W · вход + b )
+    </div>
+
+    <p class="note">
+      Здесь <code>W</code> — матрица весов, <code>b</code> — вектор смещений (bias), <code>activation</code> — нелинейность. Один такой блок и есть «слой».
+    </p>
+  </div>
+</section>
+
+
+<!-- ============================== MODULE 8 ============================== -->
+<section class="module" id="m8">
+  <div class="container">
+    <div class="module-number">Модуль 08 · Attention</div>
+    <h2>Attention — собираем всё вместе</h2>
+
+    <p>
+      Теперь у нас есть всё, чтобы понять <strong>attention</strong> — главный механизм Transformer. Это та самая идея, благодаря которой современные LLM вообще стали возможны.
+    </p>
+
+    <p>
+      Идея простая: при обработке слова модель должна решить, <em>на какие другие слова в тексте обратить внимание</em>. Когда мы видим «кошка села на мягкий ___», то для предсказания последнего слова нужно прежде всего смотреть на «села на» (и «мягкий») — а не на случайные слова из начала текста.
+    </p>
+
+    <h3>Q, K, V — три магических буквы</h3>
+
+    <p>
+      Для каждого слова в тексте Transformer создаёт <strong>три</strong> вектора, умножая embedding на три разные матрицы:
+    </p>
+
+    <ul style="list-style: none; padding-left: 0; margin: 16px 0 24px;">
+      <li style="padding: 10px 0; border-bottom: 1px dotted var(--line);">
+        <strong style="color: #BC4B51;">Q (Query) — «запрос»</strong> · «Что я ищу?» Это вектор того, что слово хочет узнать у других слов.
+      </li>
+      <li style="padding: 10px 0; border-bottom: 1px dotted var(--line);">
+        <strong style="color: #2A6F6B;">K (Key) — «ключ»</strong> · «Кто я для других?» Это «бирка» слова — как оно представляется другим.
+      </li>
+      <li style="padding: 10px 0;">
+        <strong style="color: #8B6914;">V (Value) — «значение»</strong> · «Что я могу дать?» Информация, которую слово передаст, если на него обратят внимание.
+      </li>
+    </ul>
+
+    <div class="analogy">
+      <div class="analogy-icon">🔍</div>
+      <div class="analogy-text">
+        <strong>Аналогия:</strong> представь библиотеку. <strong>Q</strong> — это твой запрос на ресепшене («ищу книги про космос»). <strong>K</strong> — теги на каждой книге. <strong>V</strong> — содержимое самих книг. Сначала твой запрос сверяется со всеми тегами, потом ты получаешь содержимое только тех книг, чьи теги подошли.
+      </div>
+    </div>
+
+    <h3>Как это работает по шагам</h3>
+
+    <p>
+      Возьмём предложение <em>«кошка села на стул»</em>. Покажем, как для слова «села» модель решит, на что обратить внимание.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Механизм attention пошагово">
+        <!-- Step 1: Q for "села" -->
+        <text x="350" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-style="italic" fill="#1F2329">Шаг 1. У слова «села» есть свой Query-вектор.</text>
+
+        <g transform="translate(40, 50)">
+          <rect x="0" y="0" width="80" height="40" fill="#BC4B51" opacity="0.25" stroke="#BC4B51" stroke-width="1.5" rx="3"/>
+          <text x="40" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#1F2329">Q «села»</text>
+          <text x="40" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#4A4F58">«что я ищу?»</text>
+        </g>
+
+        <!-- Step 2: All Keys -->
+        <text x="350" y="125" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-style="italic" fill="#1F2329">Шаг 2. Считаем скалярное произведение Q со всеми K.</text>
+
+        <g transform="translate(40, 145)">
+          <!-- Q on left -->
+          <rect x="0" y="20" width="80" height="40" fill="#BC4B51" opacity="0.25" stroke="#BC4B51" stroke-width="1.5" rx="3"/>
+          <text x="40" y="45" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#1F2329">Q «села»</text>
+
+          <!-- arrows to keys -->
+          <line x1="85" y1="40" x2="180" y2="20" stroke="#1F2329" stroke-width="1" opacity="0.5"/>
+          <line x1="85" y1="40" x2="180" y2="55" stroke="#1F2329" stroke-width="1" opacity="0.5"/>
+          <line x1="85" y1="40" x2="180" y2="90" stroke="#1F2329" stroke-width="1" opacity="0.5"/>
+          <line x1="85" y1="40" x2="180" y2="125" stroke="#1F2329" stroke-width="1" opacity="0.5"/>
+
+          <!-- Keys -->
+          <g transform="translate(180, 0)">
+            <rect x="0" y="0" width="100" height="30" fill="#2A6F6B" opacity="0.25" stroke="#2A6F6B" stroke-width="1.2" rx="3"/>
+            <text x="50" y="20" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1F2329">K «кошка»</text>
+
+            <rect x="0" y="35" width="100" height="30" fill="#2A6F6B" opacity="0.25" stroke="#2A6F6B" stroke-width="1.2" rx="3"/>
+            <text x="50" y="55" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1F2329">K «села»</text>
+
+            <rect x="0" y="70" width="100" height="30" fill="#2A6F6B" opacity="0.25" stroke="#2A6F6B" stroke-width="1.2" rx="3"/>
+            <text x="50" y="90" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1F2329">K «на»</text>
+
+            <rect x="0" y="105" width="100" height="30" fill="#2A6F6B" opacity="0.25" stroke="#2A6F6B" stroke-width="1.2" rx="3"/>
+            <text x="50" y="125" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1F2329">K «стул»</text>
+          </g>
+
+          <!-- Scores -->
+          <g transform="translate(310, 0)">
+            <text x="0" y="-5" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">скалярные</text>
+            <text x="0" y="6" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">произведения</text>
+
+            <rect x="0" y="15" width="100" height="15" fill="#E5DFCE" rx="2"/>
+            <rect x="0" y="15" width="55" height="15" fill="#2A6F6B" opacity="0.7" rx="2"/>
+            <text x="110" y="27" font-family="JetBrains Mono, monospace" font-size="11" fill="#2A6F6B" font-weight="bold">5.5</text>
+
+            <rect x="0" y="50" width="100" height="15" fill="#E5DFCE" rx="2"/>
+            <rect x="0" y="50" width="80" height="15" fill="#2A6F6B" opacity="0.85" rx="2"/>
+            <text x="110" y="62" font-family="JetBrains Mono, monospace" font-size="11" fill="#2A6F6B" font-weight="bold">8.0</text>
+
+            <rect x="0" y="85" width="100" height="15" fill="#E5DFCE" rx="2"/>
+            <rect x="0" y="85" width="35" height="15" fill="#2A6F6B" opacity="0.5" rx="2"/>
+            <text x="110" y="97" font-family="JetBrains Mono, monospace" font-size="11" fill="#2A6F6B" font-weight="bold">3.5</text>
+
+            <rect x="0" y="120" width="100" height="15" fill="#E5DFCE" rx="2"/>
+            <rect x="0" y="120" width="20" height="15" fill="#2A6F6B" opacity="0.4" rx="2"/>
+            <text x="110" y="132" font-family="JetBrains Mono, monospace" font-size="11" fill="#2A6F6B" font-weight="bold">2.0</text>
+          </g>
+
+          <!-- arrow to softmax -->
+          <text x="510" y="70" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#4A4F58">softmax</text>
+          <line x1="475" y1="68" x2="540" y2="68" stroke="#2A6F6B" stroke-width="2" marker-end="url(#arrFlow2)"/>
+          <defs>
+            <marker id="arrFlow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A6F6B"/>
+            </marker>
+          </defs>
+
+          <!-- Weights -->
+          <g transform="translate(550, 0)">
+            <text x="50" y="-5" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">веса</text>
+            <text x="50" y="6" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#4A4F58">внимания</text>
+
+            <rect x="0" y="20" width="100" height="20" fill="#F4D35E" opacity="0.25" stroke="#1F2329" stroke-width="0.5" rx="2"/>
+            <text x="50" y="34" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.21</text>
+
+            <rect x="0" y="55" width="100" height="20" fill="#F4D35E" opacity="0.7" stroke="#1F2329" stroke-width="0.5" rx="2"/>
+            <text x="50" y="69" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329" font-weight="bold">0.65</text>
+
+            <rect x="0" y="90" width="100" height="20" fill="#F4D35E" opacity="0.13" stroke="#1F2329" stroke-width="0.5" rx="2"/>
+            <text x="50" y="104" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.10</text>
+
+            <rect x="0" y="125" width="100" height="20" fill="#F4D35E" opacity="0.07" stroke="#1F2329" stroke-width="0.5" rx="2"/>
+            <text x="50" y="139" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.04</text>
+          </g>
+        </g>
+
+        <!-- Step 3: -->
+        <text x="350" y="320" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-style="italic" fill="#1F2329">Шаг 3. Веса × V каждого слова → новый embedding для «села».</text>
+
+        <g transform="translate(50, 340)">
+          <text x="0" y="20" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.21 ×</text>
+          <rect x="50" y="5" width="70" height="22" fill="#8B6914" opacity="0.3" stroke="#8B6914" stroke-width="1" rx="2"/>
+          <text x="85" y="20" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">V «кошка»</text>
+
+          <text x="135" y="20" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B">+</text>
+
+          <text x="155" y="20" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329" font-weight="bold">0.65 ×</text>
+          <rect x="210" y="5" width="70" height="22" fill="#8B6914" opacity="0.7" stroke="#8B6914" stroke-width="1.5" rx="2"/>
+          <text x="245" y="20" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#FFFCF3" font-weight="bold">V «села»</text>
+
+          <text x="295" y="20" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B">+</text>
+
+          <text x="315" y="20" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.10 ×</text>
+          <rect x="370" y="5" width="70" height="22" fill="#8B6914" opacity="0.3" stroke="#8B6914" stroke-width="1" rx="2"/>
+          <text x="405" y="20" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">V «на»</text>
+
+          <text x="455" y="20" font-family="JetBrains Mono, monospace" font-size="13" fill="#2A6F6B">+</text>
+
+          <text x="475" y="20" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">0.04 ×</text>
+          <rect x="530" y="5" width="70" height="22" fill="#8B6914" opacity="0.3" stroke="#8B6914" stroke-width="1" rx="2"/>
+          <text x="565" y="20" text-anchor="middle" font-family="Fraunces, serif" font-size="11" font-style="italic" fill="#1F2329">V «стул»</text>
+        </g>
+
+        <!-- Result -->
+        <g transform="translate(220, 410)">
+          <text x="0" y="20" font-family="Fraunces, serif" font-size="14" font-style="italic" fill="#4A4F58">= новый, обогащённый контекстом embedding для «села»:</text>
+          <rect x="0" y="35" width="260" height="32" fill="#F4D35E" opacity="0.4" stroke="#1F2329" stroke-width="1.5" rx="3"/>
+          <text x="130" y="56" text-anchor="middle" font-family="Fraunces, serif" font-size="14" fill="#1F2329">«села с учётом всего предложения»</text>
+        </g>
+      </svg>
+      <figcaption><strong>Attention в одной картинке.</strong> Q × K → сырые оценки → softmax → веса (всегда сумма = 1) → взвешенная сумма всех V. Выход — новый embedding, в который «втянуто» внимание ко всем нужным словам.</figcaption>
+    </figure>
+
+    <h3>Карта внимания</h3>
+
+    <p>
+      Если посчитать веса внимания между всеми парами слов, получится <strong>матрица внимания</strong>. Это очень показательная картинка.
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Тепловая карта внимания между словами">
+        <text x="300" y="25" text-anchor="middle" font-family="Fraunces, serif" font-size="15" font-style="italic" fill="#1F2329">Карта внимания: «Кошка села на мягкий стул»</text>
+
+        <!-- Column headers -->
+        <g font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#1F2329">
+          <text x="200" y="65" text-anchor="middle">Кошка</text>
+          <text x="260" y="65" text-anchor="middle">села</text>
+          <text x="320" y="65" text-anchor="middle">на</text>
+          <text x="380" y="65" text-anchor="middle">мягкий</text>
+          <text x="440" y="65" text-anchor="middle">стул</text>
+        </g>
+
+        <!-- Row labels -->
+        <g font-family="Fraunces, serif" font-size="13" font-style="italic" fill="#1F2329">
+          <text x="170" y="105" text-anchor="end">Кошка →</text>
+          <text x="170" y="155" text-anchor="end">села →</text>
+          <text x="170" y="205" text-anchor="end">на →</text>
+          <text x="170" y="255" text-anchor="end">мягкий →</text>
+          <text x="170" y="305" text-anchor="end">стул →</text>
+        </g>
+
+        <!-- Heat map: 5x5 grid -->
+        <g transform="translate(170, 80)">
+          <!-- Each cell is 60x40, opacity = attention weight -->
+          <!-- Row 1: Кошка attends to: -->
+          <rect x="0" y="0" width="60" height="40" fill="#2A6F6B" opacity="0.85" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="30" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.85</text>
+          <rect x="60" y="0" width="60" height="40" fill="#2A6F6B" opacity="0.10" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="90" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.05</text>
+          <rect x="120" y="0" width="60" height="40" fill="#2A6F6B" opacity="0.08" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="150" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.04</text>
+          <rect x="180" y="0" width="60" height="40" fill="#2A6F6B" opacity="0.07" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="210" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.03</text>
+          <rect x="240" y="0" width="60" height="40" fill="#2A6F6B" opacity="0.06" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="270" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.03</text>
+
+          <!-- Row 2: села attends mostly to кошка and self -->
+          <rect x="0" y="50" width="60" height="40" fill="#2A6F6B" opacity="0.55" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="30" y="75" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.40</text>
+          <rect x="60" y="50" width="60" height="40" fill="#2A6F6B" opacity="0.65" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="90" y="75" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.45</text>
+          <rect x="120" y="50" width="60" height="40" fill="#2A6F6B" opacity="0.10" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="150" y="75" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.06</text>
+          <rect x="180" y="50" width="60" height="40" fill="#2A6F6B" opacity="0.08" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="210" y="75" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.05</text>
+          <rect x="240" y="50" width="60" height="40" fill="#2A6F6B" opacity="0.08" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="270" y="75" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.04</text>
+
+          <!-- Row 3: на attends to села and стул -->
+          <rect x="0" y="100" width="60" height="40" fill="#2A6F6B" opacity="0.10" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="30" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.06</text>
+          <rect x="60" y="100" width="60" height="40" fill="#2A6F6B" opacity="0.50" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="90" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.35</text>
+          <rect x="120" y="100" width="60" height="40" fill="#2A6F6B" opacity="0.35" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="150" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.20</text>
+          <rect x="180" y="100" width="60" height="40" fill="#2A6F6B" opacity="0.15" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="210" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.10</text>
+          <rect x="240" y="100" width="60" height="40" fill="#2A6F6B" opacity="0.42" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="270" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.29</text>
+
+          <!-- Row 4: мягкий attends to стул mostly -->
+          <rect x="0" y="150" width="60" height="40" fill="#2A6F6B" opacity="0.07" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="30" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.04</text>
+          <rect x="60" y="150" width="60" height="40" fill="#2A6F6B" opacity="0.07" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="90" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.04</text>
+          <rect x="120" y="150" width="60" height="40" fill="#2A6F6B" opacity="0.13" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="150" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.07</text>
+          <rect x="180" y="150" width="60" height="40" fill="#2A6F6B" opacity="0.30" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="210" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.20</text>
+          <rect x="240" y="150" width="60" height="40" fill="#2A6F6B" opacity="0.85" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="270" y="175" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.65</text>
+
+          <!-- Row 5: стул attends mostly to self, a bit to кошка/села -->
+          <rect x="0" y="200" width="60" height="40" fill="#2A6F6B" opacity="0.30" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="30" y="225" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.18</text>
+          <rect x="60" y="200" width="60" height="40" fill="#2A6F6B" opacity="0.20" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="90" y="225" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.12</text>
+          <rect x="120" y="200" width="60" height="40" fill="#2A6F6B" opacity="0.18" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="150" y="225" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1F2329">.10</text>
+          <rect x="180" y="200" width="60" height="40" fill="#2A6F6B" opacity="0.32" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="210" y="225" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.20</text>
+          <rect x="240" y="200" width="60" height="40" fill="#2A6F6B" opacity="0.65" stroke="#FFFCF3" stroke-width="1"/>
+          <text x="270" y="225" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#FFFCF3" font-weight="bold">.40</text>
+        </g>
+
+        <text x="300" y="360" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#4A4F58">Каждая строка показывает, на что обращает внимание данное слово (в сумме = 1).</text>
+      </svg>
+      <figcaption><strong>Тепловая карта внимания.</strong> Видно, как «мягкий» сильно «смотрит» на «стул» (определение → определяемое), а «на» — связывает «села» и «стул».</figcaption>
+    </figure>
+
+    <h3>Полная картина</h3>
+
+    <p>
+      Каждый attention-блок Transformer'а — это:
+    </p>
+
+    <ul style="list-style: decimal; padding-left: 20px; margin: 16px 0 24px;">
+      <li style="padding: 4px 0;">Берём embedding слов (это <strong>векторы</strong>).</li>
+      <li style="padding: 4px 0;">Умножаем на матрицы W_Q, W_K, W_V (это <strong>матричное умножение</strong>) — получаем Q, K, V.</li>
+      <li style="padding: 4px 0;">Считаем Q · K (это <strong>скалярное произведение</strong>) для всех пар слов.</li>
+      <li style="padding: 4px 0;">Превращаем оценки в веса через softmax (нелинейность).</li>
+      <li style="padding: 4px 0;">Складываем V с этими весами (<strong>взвешенная сумма векторов</strong>).</li>
+      <li style="padding: 4px 0;">Получаем новые embeddings, обогащённые контекстом.</li>
+    </ul>
+
+    <div class="callout warm">
+      <span class="callout-label">Это всё, что нужно</span>
+      <p>
+        Видишь? Внутри Transformer'а — только наши знакомые операции: <strong>векторы, скалярное произведение, умножение матриц</strong>. Просто их много, и они сложены в большую конструкцию. Когда говорят «трансформер сложный» — это про масштаб, не про математику.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ MODULE 9: NEXT STEPS ============ -->
+<section class="module" id="m9">
+  <div class="container">
+    <div class="module-number">Модуль 09 · Дальше</div>
+    <h2>Куда идти дальше</h2>
+
+    <p style="font-family: 'Fraunces', serif; font-size: 1.15rem; font-style: italic; color: var(--ink-soft); margin-bottom: 32px;">
+      Ты прошёл базу. Теперь у тебя есть карта местности — можно выбирать, куда углубляться.
+    </p>
+
+    <p>
+      Поздравляю — ты только что прошёл фундамент линейной алгебры, на котором стоит вся современная LLM-индустрия. Серьёзно: <strong>векторы, скалярное произведение, матричное умножение и линейные преобразования</strong> — это 80% математики внутри GPT, Claude, Gemini и любой другой модели.
+    </p>
+
+    <p>
+      Если хочешь идти дальше — вот темы, которые логически вырастают из того, что мы прошли. Они расположены примерно в порядке возрастания сложности.
+    </p>
+
+    <h3>Темы, которые стоит изучить</h3>
+
+    <figure>
+      <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Карта следующих тем">
+        <!-- Center node -->
+        <circle cx="350" cy="240" r="60" fill="#F4D35E" opacity="0.4" stroke="#1F2329" stroke-width="1.5"/>
+        <text x="350" y="235" text-anchor="middle" font-family="Fraunces, serif" font-size="14" font-weight="600" fill="#1F2329">Ты здесь</text>
+        <text x="350" y="252" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">база ЛА</text>
+
+        <!-- Top: Eigenvalues -->
+        <line x1="350" y1="180" x2="350" y2="100" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="240" y="40" width="220" height="60" rx="4" fill="#FFFCF3" stroke="#2A6F6B" stroke-width="1.5"/>
+        <text x="350" y="62" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#2A6F6B">Собственные векторы</text>
+        <text x="350" y="80" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">«главные направления»</text>
+        <text x="350" y="93" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">матрицы</text>
+
+        <!-- Right: SVD -->
+        <line x1="410" y1="240" x2="510" y2="240" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="510" y="200" width="170" height="80" rx="4" fill="#FFFCF3" stroke="#BC4B51" stroke-width="1.5"/>
+        <text x="595" y="222" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#BC4B51">SVD</text>
+        <text x="595" y="240" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">разложение матрицы,</text>
+        <text x="595" y="254" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">сжатие моделей,</text>
+        <text x="595" y="268" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">LoRA-адаптеры</text>
+
+        <!-- Bottom-right: Gradients -->
+        <line x1="395" y1="290" x2="490" y2="370" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="470" y="370" width="200" height="80" rx="4" fill="#FFFCF3" stroke="#2A6F6B" stroke-width="1.5"/>
+        <text x="570" y="392" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#2A6F6B">Градиенты и обучение</text>
+        <text x="570" y="410" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">как модель</text>
+        <text x="570" y="424" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">подбирает миллиарды</text>
+        <text x="570" y="438" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">параметров</text>
+
+        <!-- Bottom: Probability -->
+        <line x1="350" y1="300" x2="350" y2="370" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="240" y="370" width="220" height="80" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+        <text x="350" y="392" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#1F2329">Вероятность и softmax</text>
+        <text x="350" y="410" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">как числа превращаются</text>
+        <text x="350" y="424" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">в выбор следующего</text>
+        <text x="350" y="438" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">слова</text>
+
+        <!-- Bottom-left: Norms -->
+        <line x1="305" y1="290" x2="210" y2="370" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="30" y="370" width="200" height="80" rx="4" fill="#FFFCF3" stroke="#BC4B51" stroke-width="1.5"/>
+        <text x="130" y="392" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#BC4B51">Нормы и расстояния</text>
+        <text x="130" y="410" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">cosine similarity,</text>
+        <text x="130" y="424" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">как находить похожие</text>
+        <text x="130" y="438" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">тексты</text>
+
+        <!-- Left: Tensors -->
+        <line x1="290" y1="240" x2="190" y2="240" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="20" y="200" width="170" height="80" rx="4" fill="#FFFCF3" stroke="#2A6F6B" stroke-width="1.5"/>
+        <text x="105" y="222" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#2A6F6B">Тензоры</text>
+        <text x="105" y="240" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">матрицы выше</text>
+        <text x="105" y="254" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">2 измерений —</text>
+        <text x="105" y="268" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">batches, каналы</text>
+
+        <!-- Top-left: Linear independence -->
+        <line x1="305" y1="195" x2="200" y2="135" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="20" y="80" width="180" height="60" rx="4" fill="#FFFCF3" stroke="#1F2329" stroke-width="1.5"/>
+        <text x="110" y="102" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#1F2329">Линейная зависимость</text>
+        <text x="110" y="120" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">базис, размерность,</text>
+        <text x="110" y="133" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">ранг матрицы</text>
+
+        <!-- Top-right: Backprop -->
+        <line x1="395" y1="195" x2="500" y2="135" stroke="#1F2329" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <rect x="500" y="80" width="180" height="60" rx="4" fill="#FFFCF3" stroke="#BC4B51" stroke-width="1.5"/>
+        <text x="590" y="102" text-anchor="middle" font-family="Fraunces, serif" font-size="13" font-weight="600" fill="#BC4B51">Backpropagation</text>
+        <text x="590" y="120" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">как градиент течёт</text>
+        <text x="590" y="133" text-anchor="middle" font-family="Source Serif 4, serif" font-size="11" fill="#4A4F58">через слои</text>
+      </svg>
+      <figcaption>Карта тем, которые естественно растут из того, что ты уже знаешь.</figcaption>
+    </figure>
+
+    <h3>Что выбрать первым</h3>
+
+    <p>
+      Если у тебя слабая математика — не пытайся брать всё сразу. Вот честный порядок, который работает:
+    </p>
+
+    <div class="callout">
+      <span class="callout-label">Шаг 1 · нормы и расстояния</span>
+      <p>
+        Это просто. Длина вектора, расстояние между векторами, <strong>cosine similarity</strong>. Сразу же увидишь, как работает поиск похожих текстов (RAG, embeddings-поиск). Полный практический эффект за пару дней.
+      </p>
+    </div>
+
+    <div class="callout">
+      <span class="callout-label">Шаг 2 · softmax и вероятности</span>
+      <p>
+        Очень простая функция, которая превращает любой набор чисел в вероятности. Без неё не работает ни attention, ни выбор следующего слова. Поймёшь софтмакс — поймёшь, как модель «выбирает».
+      </p>
+    </div>
+
+    <div class="callout warm">
+      <span class="callout-label">Шаг 3 · производные и градиенты</span>
+      <p>
+        Это уже не линейная алгебра, а математический анализ — но именно тут происходит <strong>обучение</strong>. Без градиентов модель никогда не узнает, что «кошка» и «котёнок» близки. Если возьмёшь только одну новую тему — бери эту.
+      </p>
+    </div>
+
+    <div class="callout">
+      <span class="callout-label">Шаг 4 · собственные векторы и SVD</span>
+      <p>
+        Чуть сложнее, но мощно. SVD объясняет, почему работают LoRA-адаптеры (когда дотюнивают LLM маленьким количеством параметров) и как сжимают модели. Это уже инженерный уровень.
+      </p>
+    </div>
+
+    <h3>Главная мысль, которую важно унести</h3>
+
+    <div class="big-quote">
+      LLM — это не магия и не «искусственный мозг». Это очень большая, очень аккуратно настроенная конструкция из векторов и матриц. Если ты понял операции — ты понял, что происходит внутри.
+    </div>
+
+    <p>
+      Когда в следующий раз увидишь новость вроде «новая модель имеет 70 миллиардов параметров» — ты уже знаешь, что параметры <strong>— это числа в матрицах</strong>. Когда увидишь «контекстное окно 200 тысяч токенов» — знаешь, что токены становятся векторами, и attention считает скалярные произведения между ними. Когда услышишь про embeddings — знаешь, что это векторы в многомерном пространстве, где близость означает смысл.
+    </p>
+
+    <p>
+      Это и есть то, ради чего стоило проходить этот курс. Не запомнить формулы, а <strong>увидеть форму</strong>.
+    </p>
+
+    <div class="callout warm">
+      <span class="callout-label">Где практиковаться</span>
+      <p>
+        Самый быстрый способ закрепить — поиграть руками. Открой Python, поставь NumPy, и попробуй: сложить два вектора, посчитать их скалярное произведение, перемножить две матрицы, посмотреть, что выходит. Десять минут практики стоят часа чтения.
+      </p>
+      <p>
+        Если хочешь сразу с LLM — библиотека <strong>sentence-transformers</strong> позволяет получать настоящие embedding'и слов и предложений в три строки кода. Можно посчитать cosine similarity между «кошка» и «собака», между «кошка» и «парламент» — и увидеть всё, о чём мы говорили, на реальных числах.
+      </p>
+    </div>
+
+    <h3>Полезные ресурсы</h3>
+
+    <ul style="list-style: none; padding: 0; margin: 16px 0 24px;">
+      <li style="padding: 12px 0; border-bottom: 1px solid rgba(31,35,41,0.1);">
+        <strong>3Blue1Brown — Essence of Linear Algebra</strong> (YouTube)<br>
+        <span style="color: var(--ink-soft); font-size: 0.95em;">Лучшие в мире визуализации линейной алгебры. То, что мы делали тут — облегчённая версия их подхода. Смотри обязательно.</span>
+      </li>
+      <li style="padding: 12px 0; border-bottom: 1px solid rgba(31,35,41,0.1);">
+        <strong>3Blue1Brown — But what is a neural network?</strong><br>
+        <span style="color: var(--ink-soft); font-size: 0.95em;">Серия про нейросети, включая отдельные видео про GPT и attention. На русском есть субтитры.</span>
+      </li>
+      <li style="padding: 12px 0; border-bottom: 1px solid rgba(31,35,41,0.1);">
+        <strong>Jay Alammar — The Illustrated Transformer</strong><br>
+        <span style="color: var(--ink-soft); font-size: 0.95em;">Картиночное объяснение трансформера на уровне «всё видно». После нашего курса зайдёт легко.</span>
+      </li>
+      <li style="padding: 12px 0; border-bottom: 1px solid rgba(31,35,41,0.1);">
+        <strong>Andrej Karpathy — Neural Networks: Zero to Hero</strong> (YouTube)<br>
+        <span style="color: var(--ink-soft); font-size: 0.95em;">Курс, в котором GPT строится с нуля в Python. Сложнее, но именно тут видно всё, о чём мы говорили, в коде.</span>
+      </li>
+      <li style="padding: 12px 0;">
+        <strong>Khan Academy — Linear Algebra</strong><br>
+        <span style="color: var(--ink-soft); font-size: 0.95em;">Если хочешь системно: бесплатный курс с упражнениями, для математически слабого старта подходит идеально.</span>
+      </li>
+    </ul>
+
+    <div class="big-quote" style="margin-top: 40px;">
+      Удачи. Теперь ты знаешь язык, на котором говорят машины.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p style="font-family: Fraunces, serif; font-style: italic; color: var(--ink-soft); font-size: 1.05rem; margin: 0;">
+      Курс собран как карта, а не как учебник.<br>
+      Если что-то осталось неясным — это нормально. Возвращайся к нужному модулю.
+    </p>
+    <p style="margin-top: 32px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--ink-soft); letter-spacing: 0.15em;">
+      ЛИНЕЙНАЯ АЛГЕБРА · LLM · 9 МОДУЛЕЙ
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
