@@ -1,17 +1,971 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>AI Learning</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Atelier · Личный архив</title>
+<meta name="description" content="Личная библиотека материалов и заметок." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400;1,9..144,500;1,9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================
+     ОСНОВА · ЦВЕТА И ТИПОГРАФИКА
+     Палитра намеренно совпадает с roadmap.html /
+     linear-algebra-for-llm.html — переход
+     внутрь должен ощущаться единым изданием.
+     ============================================ */
+  :root {
+    --paper:        #F5F0E6;
+    --paper-deep:   #EBE3D2;
+    --paper-warm:   #EFE7D2;
+    --ink:          #1A1D24;
+    --ink-soft:     #3C3A36;
+    --ink-faded:    #6B6657;
+    --ink-ghost:    #9A9281;
+    --rust:         #8B3A1F;
+    --rust-deep:    #5C2613;
+    --rust-soft:    #C97B5C;
+    --olive:        #4A4838;
+    --gold:         #B89B5A;
+    --gold-soft:    #D9C99B;
+    --hairline:     #C9BFA8;
+    --hairline-soft:#DED5BD;
+    --shadow:       0 1px 0 rgba(26,29,36,0.04);
+
+    --serif-display: "Fraunces", "Times New Roman", Georgia, serif;
+    --serif-body:    "Newsreader", Georgia, serif;
+    --mono:          "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  ::selection { background: var(--gold-soft); color: var(--ink); }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-body);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Тонкая фактура «бумаги» поверх фона.
+     Слабый нойз + пара тёплых пятен. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(1200px 700px at 8% 0%, rgba(184,155,90,0.07), transparent 60%),
+      radial-gradient(900px 600px at 100% 100%, rgba(139,58,31,0.05), transparent 65%);
+    z-index: 0;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 0;
+  }
+
+  .stage { position: relative; z-index: 1; }
+
+  /* ============================================
+     ВЕРХНИЙ ТИКЕР · бесконечная бегущая строка
+     ============================================ */
+  .ticker {
+    position: relative;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--paper-deep);
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 9px 0;
+    opacity: 0;
+    animation: fade-in 0.6s ease-out 0.05s forwards;
+  }
+  .ticker-track {
+    display: inline-flex;
+    gap: 48px;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: marquee 60s linear infinite;
+  }
+  .ticker span {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ticker .pulse {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--rust);
+    box-shadow: 0 0 0 0 rgba(139,58,31,0.6);
+    animation: pulse 1.8s ease-out infinite;
+    flex: none;
+  }
+  .ticker .sep { color: var(--ink-ghost); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(139,58,31,0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(139,58,31,0); }
+    100% { box-shadow: 0 0 0 0 rgba(139,58,31,0); }
+  }
+
+  /* ============================================
+     КОНТЕЙНЕР
+     ============================================ */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  @media (max-width: 700px) {
+    .wrap { padding: 0 22px; }
+  }
+
+  /* ============================================
+     MASTHEAD · издательская шапка
+     ============================================ */
+  .masthead {
+    padding: 56px 0 28px;
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  .masthead-top .left,
+  .masthead-top .right {
+    display: flex; gap: 22px; align-items: center;
+    opacity: 0;
+    animation: fade-in 0.7s ease-out 0.35s forwards;
+  }
+  .masthead-top .right { animation-delay: 0.5s; }
+  .masthead-top .dot {
+    width: 4px; height: 4px;
+    background: var(--ink-faded);
+    border-radius: 50%;
+  }
+
+  .nameplate {
+    font-family: var(--serif-display);
+    font-weight: 300;
+    font-size: clamp(56px, 11vw, 138px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin: 0;
+    font-variation-settings: "opsz" 144;
+  }
+  .nameplate .word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+  }
+  .nameplate .word > span {
+    display: inline-block;
+    transform: translateY(105%);
+    animation: rise 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .nameplate .word:nth-child(1) > span { animation-delay: 0.18s; }
+  .nameplate .word:nth-child(2) > span { animation-delay: 0.30s; font-style: italic; font-weight: 400; color: var(--rust); }
+  @keyframes rise {
+    to { transform: translateY(0); }
+  }
+
+  .masthead-sub {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    margin-top: 28px;
+  }
+  .masthead-tag {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 540px;
+    line-height: 1.45;
+    opacity: 0;
+    animation: fade-in 0.8s ease-out 0.95s forwards;
+  }
+  .masthead-tag::before {
+    content: "— ";
+    color: var(--rust);
+    font-style: normal;
+    margin-right: 4px;
+  }
+  .masthead-edition {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    text-align: right;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fade-in 0.8s ease-out 1.05s forwards;
+  }
+  .masthead-edition strong {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 15px;
+    color: var(--ink);
+    display: block;
+    margin-top: 2px;
+  }
+  @media (max-width: 700px) {
+    .masthead-sub { grid-template-columns: 1fr; }
+    .masthead-edition { text-align: left; }
+  }
+
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
+
+  /* ============================================
+     ФИЛЬТР СЕКЦИЙ
+     ============================================ */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 26px 0 22px;
+    border-bottom: 1px solid var(--hairline);
+    opacity: 0;
+    animation: fade-in 0.7s ease-out 1.25s forwards;
+  }
+  .filter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-right: 8px;
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 7px 14px 7px 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .chip .count {
+    font-size: 10px;
+    color: var(--ink-ghost);
+    font-weight: 500;
+  }
+  .chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .chip[aria-pressed="true"] .count { color: var(--paper); opacity: 0.55; }
+
+  .search {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 6px 14px;
+    transition: border-color 0.2s, background 0.2s;
+    background: transparent;
+  }
+  .search:focus-within {
+    border-color: var(--ink);
+    background: var(--paper-deep);
+  }
+  .search svg { width: 14px; height: 14px; color: var(--ink-faded); flex: none; }
+  .search input {
+    border: 0; background: transparent; outline: none;
+    font-family: var(--serif-body);
+    font-size: 14px;
+    color: var(--ink);
+    width: 180px;
+  }
+  .search input::placeholder {
+    color: var(--ink-ghost);
+    font-style: italic;
+  }
+  @media (max-width: 700px) {
+    .search { margin-left: 0; width: 100%; }
+    .search input { width: 100%; }
+  }
+
+  /* ============================================
+     INDEX HEADER · «Содержание выпуска»
+     ============================================ */
+  .index-header {
+    padding: 48px 0 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 0;
+  }
+  .index-header h2 {
+    font-family: var(--serif-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 32px;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .index-header .meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  /* ============================================
+     ENTRY · одна запись каталога
+     ============================================ */
+  .archive { list-style: none; padding: 0; margin: 0; }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 90px 1fr 220px;
+    gap: 32px;
+    padding: 30px 0;
+    border-bottom: 1px solid var(--hairline);
+    text-decoration: none;
+    color: var(--ink);
+    position: relative;
+    transition: background 0.4s ease;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: entry-rise 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  @keyframes entry-rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .entry:nth-child(1) { animation-delay: 1.4s; }
+  .entry:nth-child(2) { animation-delay: 1.5s; }
+  .entry:nth-child(3) { animation-delay: 1.6s; }
+  .entry:nth-child(4) { animation-delay: 1.7s; }
+  .entry:nth-child(5) { animation-delay: 1.8s; }
+  .entry:nth-child(6) { animation-delay: 1.9s; }
+  .entry:nth-child(n+7) { animation-delay: 2.0s; }
+
+  /* hover: лёгкий сдвиг + подсветка фона */
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: -16px; right: -16px;
+    top: 0; bottom: 0;
+    background: var(--paper-deep);
+    border-radius: 4px;
+    opacity: 0;
+    transform: scale(0.985);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: -1;
+  }
+  .entry:hover::before { opacity: 1; transform: scale(1); }
+
+  .entry-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faded);
+    padding-top: 6px;
+    transition: color 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .entry-num .pad {
+    display: inline-block;
+    color: var(--ink-ghost);
+  }
+  .entry:hover .entry-num {
+    color: var(--rust);
+    transform: translateX(4px);
+  }
+
+  .entry-body { min-width: 0; }
+
+  .entry-section {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .entry-section::before {
+    content: "";
+    width: 16px; height: 1px;
+    background: var(--rust);
+    display: inline-block;
+    transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .entry:hover .entry-section::before { width: 32px; }
+
+  .entry-title {
+    font-family: var(--serif-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3.8vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-variation-settings: "opsz" 80;
+    transition: color 0.3s ease;
+    display: inline;
+    background-image: linear-gradient(var(--ink), var(--ink));
+    background-size: 0 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .entry:hover .entry-title {
+    background-size: 100% 1px;
+  }
+
+  .entry-subtitle {
+    font-family: var(--serif-body);
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 10px 0 14px;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 560px;
+  }
+
+  .entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+  }
+  .entry-tags span { display: inline-flex; align-items: center; gap: 6px; }
+  .entry-tags .bullet { color: var(--rust); opacity: 0.55; }
+
+  .entry-aside {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    line-height: 1.7;
+    padding-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+  }
+  .entry-aside .arrow {
+    margin-top: 14px;
+    width: 36px; height: 1px;
+    background: var(--ink);
+    position: relative;
+    transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .entry-aside .arrow::after {
+    content: "";
+    position: absolute;
+    right: 0; top: -3px;
+    width: 7px; height: 7px;
+    border-top: 1px solid var(--ink);
+    border-right: 1px solid var(--ink);
+    transform: rotate(45deg);
+  }
+  .entry:hover .entry-aside .arrow { width: 56px; }
+
+  .entry.is-soon {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+  }
+  .entry.is-soon .entry-aside { color: var(--ink-ghost); font-style: italic; text-transform: none; letter-spacing: 0.04em; }
+
+  /* мобильная компоновка entry */
+  @media (max-width: 760px) {
+    .entry {
+      grid-template-columns: 60px 1fr;
+      gap: 18px;
+      padding: 24px 0;
+    }
+    .entry-aside {
+      grid-column: 1 / -1;
+      text-align: left;
+      align-items: flex-start;
+      padding-top: 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .entry-aside .arrow { margin-top: 0; }
+  }
+
+  /* фильтр: исчезновение неактивных */
+  .entry.is-hidden {
+    display: none;
+  }
+
+  /* пустое состояние */
+  .empty {
+    padding: 80px 0;
+    text-align: center;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-faded);
+    display: none;
+  }
+  .empty.is-visible { display: block; }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  footer {
+    margin-top: 80px;
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+  footer .colophon {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+    max-width: 500px;
+    line-height: 1.55;
+  }
+  footer .colophon::before {
+    content: "Колофон. ";
+    font-family: var(--serif-display);
+    font-weight: 600;
+    color: var(--ink);
+    font-style: normal;
+  }
+  @media (max-width: 700px) {
+    footer { grid-template-columns: 1fr; }
+  }
+
+  /* ============================================
+     УВАЖАЕМ ПОЛЬЗОВАТЕЛЯ С ОТКЛЮЧЁННОЙ АНИМАЦИЕЙ
+     ============================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 </head>
 <body>
-  <h1>AI Learning Room</h1>
+<div class="stage">
 
-  <ul>
-    <li><a href="linear-algebra-for-llm.html">Linear Algebra for LLM</a></li>
-    <li><a href="marketing-glossary.html">Marketing Glossary</a></li>
-    <li><a href="roadmap.html">Roadmap</a></li>
-    <li><a href="roadmap_zoom_en.html">Roadmap Zoom EN</a></li>
-  </ul>
+  <!-- ============================================
+       БЕГУЩАЯ СТРОКА
+       ============================================ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+
+  <!-- ============================================
+       MASTHEAD
+       ============================================ -->
+  <header class="wrap masthead">
+    <div class="masthead-top">
+      <div class="left">
+        <span id="today-date">—</span>
+        <span class="dot"></span>
+        <span id="today-time">—</span>
+        <span class="dot"></span>
+        <span>Houston · TX</span>
+      </div>
+      <div class="right">
+        <span>Vol. I</span>
+        <span class="dot"></span>
+        <span id="entries-count">0 entries</span>
+      </div>
+    </div>
+
+    <h1 class="nameplate">
+      <span class="word"><span>The&nbsp;</span></span><span class="word"><span>Atelier</span></span>
+    </h1>
+
+    <div class="masthead-sub">
+      <p class="masthead-tag">
+        Личный архив материалов: курсы, протоколы, словари и дорожные карты.
+        Каждый документ — отдельный «выпуск», бережно свёрстанный для медленного чтения.
+      </p>
+      <div class="masthead-edition">
+        Издание<br/>
+        <strong>Personal&nbsp;edition</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       ФИЛЬТР И ПОИСК
+       ============================================ -->
+  <div class="wrap">
+    <div class="filter-bar" id="filter-bar">
+      <span class="filter-label">Раздел</span>
+      <!-- chips подставляются JS -->
+
+      <label class="search" aria-label="Поиск по архиву">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search-input" type="search" placeholder="искать по слову…" />
+      </label>
+    </div>
+
+    <!-- ============================================
+         ИНДЕКС
+         ============================================ -->
+    <div class="index-header">
+      <h2>Содержание</h2>
+      <span class="meta" id="visible-count">— записей</span>
+    </div>
+
+    <ol class="archive" id="archive"></ol>
+
+    <p class="empty" id="empty">— ничего не найдено в этом разделе —</p>
+  </div>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="wrap">
+    <div class="colophon">
+      Свёрстано вручную, без CMS. Шрифты — <em>Fraunces</em>, <em>Newsreader</em> и
+      <em>JetBrains Mono</em>. Каждая запись ведёт к отдельному документу,
+      выполненному в той же типографической системе.
+    </div>
+    <div>
+      <div>© <span id="year">2026</span> · Personal&nbsp;Press</div>
+      <div style="margin-top:6px; opacity:0.65;">Last commit · <span id="last-commit">—</span></div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  /* ============================================
+     ДАННЫЕ АРХИВА
+     ============================================
+     Чтобы добавить новую запись — просто добавь
+     объект в массив. Поля:
+       title    — главное название
+       subtitle — курсивный подзаголовок (опц.)
+       file     — относительный путь к .html
+       section  — ключ раздела (см. SECTIONS ниже)
+       tags     — массив строк
+       length   — оценка времени чтения
+       year     — год / период
+       soon     — true если ещё не готово (показывается приглушённо)
+     ============================================ */
+
+  const SECTIONS = {
+    all:         { label: "Все" },
+    mathematics: { label: "Математика" },
+    body:        { label: "Тело" },
+    marketing:   { label: "Маркетинг" },
+    engineering: { label: "Инжиниринг" },
+  };
+
+  const ARCHIVE = [
+    {
+      title: "Линейная алгебра для LLM",
+      subtitle: "Визуальный курс по матрицам, проекциям и смыслу attention — от вектора до многоголовой архитектуры.",
+      file: "linear-algebra-for-llm.html",
+      section: "mathematics",
+      tags: ["AI", "математика", "визуальный курс"],
+      length: "≈ 80 мин",
+      year: "2025",
+    },
+    {
+      title: "Протокол восстановления",
+      subtitle: "Двенадцатинедельная программа: нагрузка, сон, питание, восстановление — оформленная как клиническая монография.",
+      file: "roadmap.html",
+      section: "body",
+      tags: ["12 недель", "протокол", "практика"],
+      length: "≈ 35 мин",
+      year: "2025",
+    },
+    {
+      title: "Маркетинговая терминология",
+      subtitle: "Рабочий словарь — от ARPU до retention cohort. Восемь категорий, аккуратные определения, без воды.",
+      file: "marketing-glossary.html",
+      section: "marketing",
+      tags: ["словарь", "обучение", "справочник"],
+      length: "≈ 25 мин",
+      year: "2025",
+    },
+    {
+      title: "AI Operating System для видеопродакшена",
+      subtitle: "Дорожная карта: архитектура агентов, пайплайны, модели и интеграции для производства видео в один поток.",
+      file: "roadmap_zoom_en.html",
+      section: "engineering",
+      tags: ["AI", "видео", "roadmap", "архитектура"],
+      length: "≈ 60 мин",
+      year: "2026",
+    },
+    // Пример «скоро» — раскомментируй или добавляй по мере появления:
+    // {
+    //   title: "Заметки об экономике внимания",
+    //   subtitle: "Эссе в работе.",
+    //   file: "#",
+    //   section: "marketing",
+    //   tags: ["эссе"],
+    //   length: "—",
+    //   year: "2026",
+    //   soon: true,
+    // },
+  ];
+
+  /* ============================================
+     ВЕРХНЯЯ БЕГУЩАЯ СТРОКА
+     ============================================ */
+  function buildTicker() {
+    const items = [
+      "personal press",
+      "the atelier · vol. I",
+      "издание для медленного чтения",
+      "набрано вручную",
+      "● архив активен",
+      "fraunces / newsreader / jetbrains mono",
+      "обновляется по мере поступления",
+    ];
+    const dot = '<span class="sep">◆</span>';
+    const block = items.map((t, i) =>
+      i === 4
+        ? `<span><span class="pulse"></span>${t.replace("● ", "")}</span>`
+        : `<span>${t}</span>`
+    ).join(dot);
+    const track = document.getElementById("ticker-track");
+    // Дублируем для бесшовной прокрутки
+    track.innerHTML = block + dot + block + dot;
+  }
+
+  /* ============================================
+     ДАТА И ВРЕМЯ В ШАПКЕ
+     ============================================ */
+  function pad(n){ return String(n).padStart(2, "0"); }
+
+  function tickClock() {
+    const now = new Date();
+    const months = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+    const dateStr = `${pad(now.getDate())} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    document.getElementById("today-date").textContent = dateStr;
+    document.getElementById("today-time").textContent = timeStr;
+  }
+
+  /* ============================================
+     CHIPS · фильтр секций
+     ============================================ */
+  let activeSection = "all";
+
+  function buildChips() {
+    const bar = document.getElementById("filter-bar");
+    const label = bar.querySelector(".filter-label");
+    const search = bar.querySelector(".search");
+
+    Object.entries(SECTIONS).forEach(([key, sec]) => {
+      const count = key === "all"
+        ? ARCHIVE.length
+        : ARCHIVE.filter(e => e.section === key).length;
+      if (key !== "all" && count === 0) return; // не показываем пустые
+
+      const chip = document.createElement("button");
+      chip.className = "chip";
+      chip.type = "button";
+      chip.dataset.section = key;
+      chip.setAttribute("aria-pressed", key === "all" ? "true" : "false");
+      chip.innerHTML = `${sec.label} <span class="count">${pad(count)}</span>`;
+      chip.addEventListener("click", () => {
+        activeSection = key;
+        bar.querySelectorAll(".chip").forEach(c =>
+          c.setAttribute("aria-pressed", c === chip ? "true" : "false")
+        );
+        applyFilter();
+      });
+      // Вставляем перед поиском
+      bar.insertBefore(chip, search);
+    });
+  }
+
+  /* ============================================
+     ОТРИСОВКА ЗАПИСЕЙ
+     ============================================ */
+  function renderArchive() {
+    const list = document.getElementById("archive");
+    list.innerHTML = "";
+
+    ARCHIVE.forEach((entry, i) => {
+      const li = document.createElement("li");
+      const tag = entry.soon ? "div" : "a";
+      const a = document.createElement(tag);
+      a.className = "entry" + (entry.soon ? " is-soon" : "");
+      if (!entry.soon) a.href = entry.file;
+      a.dataset.section = entry.section;
+      a.dataset.search = (
+        entry.title + " " +
+        (entry.subtitle || "") + " " +
+        (entry.tags || []).join(" ")
+      ).toLowerCase();
+
+      const num = String(i + 1).padStart(2, "0");
+      const tagsHtml = (entry.tags || [])
+        .map(t => `<span>${t}</span>`)
+        .join('<span class="bullet">·</span>');
+
+      a.innerHTML = `
+        <div class="entry-num"><span class="pad">№</span> ${num}</div>
+        <div class="entry-body">
+          <div class="entry-section">${SECTIONS[entry.section]?.label ?? "—"}</div>
+          <h3 class="entry-title">${entry.title}</h3>
+          ${entry.subtitle ? `<p class="entry-subtitle">${entry.subtitle}</p>` : ""}
+          ${tagsHtml ? `<div class="entry-tags">${tagsHtml}</div>` : ""}
+        </div>
+        <div class="entry-aside">
+          <div>${entry.length || ""}</div>
+          <div>${entry.year || ""}</div>
+          ${entry.soon
+            ? `<div style="margin-top:10px;">в работе</div>`
+            : `<div class="arrow" aria-hidden="true"></div>`}
+        </div>
+      `;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    document.getElementById("entries-count").textContent =
+      `${ARCHIVE.length} ${plural(ARCHIVE.length, ["запись", "записи", "записей"])}`;
+  }
+
+  function plural(n, forms) {
+    const a = Math.abs(n) % 100, b = a % 10;
+    if (a > 10 && a < 20) return forms[2];
+    if (b > 1 && b < 5) return forms[1];
+    if (b === 1) return forms[0];
+    return forms[2];
+  }
+
+  /* ============================================
+     ФИЛЬТР + ПОИСК
+     ============================================ */
+  function applyFilter() {
+    const q = (document.getElementById("search-input").value || "").trim().toLowerCase();
+    const list = document.querySelectorAll(".entry");
+    let visible = 0;
+    list.forEach(el => {
+      const matchSection = activeSection === "all" || el.dataset.section === activeSection;
+      const matchSearch  = !q || el.dataset.search.includes(q);
+      const show = matchSection && matchSearch;
+      el.classList.toggle("is-hidden", !show);
+      if (show) visible++;
+    });
+    document.getElementById("empty").classList.toggle("is-visible", visible === 0);
+    document.getElementById("visible-count").textContent =
+      `${pad(visible)} ${plural(visible, ["запись", "записи", "записей"])} · видно`;
+  }
+
+  /* ============================================
+     МАГНИТНЫЙ HOVER на entries (лёгкий)
+     ============================================ */
+  function attachMagnetic() {
+    const entries = document.querySelectorAll(".entry:not(.is-soon)");
+    entries.forEach(el => {
+      el.addEventListener("mousemove", e => {
+        const r = el.getBoundingClientRect();
+        const dx = (e.clientX - r.left) / r.width  - 0.5;
+        // только лёгкая горизонтальная подвижка — не вертикаль, чтобы не «прыгало»
+        el.style.setProperty("transform", `translateX(${dx * 6}px)`);
+      });
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = "";
+      });
+    });
+  }
+
+  /* ============================================
+     INIT
+     ============================================ */
+  document.addEventListener("DOMContentLoaded", () => {
+    buildTicker();
+    tickClock();
+    setInterval(tickClock, 1000);
+    buildChips();
+    renderArchive();
+    applyFilter();
+    attachMagnetic();
+
+    document.getElementById("search-input")
+      .addEventListener("input", applyFilter);
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("last-commit").textContent =
+      new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" });
+  });
+</script>
 </body>
 </html>
